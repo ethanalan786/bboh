@@ -1,0 +1,494 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  email           String           @unique
+  password        String?
+  name            String?
+  role            Role             @default(FRONT_DESK)
+  image           String?
+  phone           String?
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+  googleId        String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  sales           Sale[]
+  customerSales   Sale[]           @relation("CustomerSales")
+  auditLogs       AuditLog[]
+  stockHistory    StockHistory[]
+  reportBookmarks ReportBookmark[]
+  feedback        Feedback[]
+}
+
+enum Role {
+  ADMIN
+  FRONT_DESK
+  INVENTORY
+  CUSTOMER
+}
+
+model Product {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  sku          String          @unique
+  categoryId   String?         @db.ObjectId
+  category     ProductCategory? @relation(fields: [categoryId], references: [id])
+  size         String?
+  color        String?
+  variant      String?
+  supplierId   String?         @db.ObjectId
+  supplier     Supplier?       @relation(fields: [supplierId], references: [id])
+  costPrice    Float           @default(0)
+  sellingPrice Float? // Made optional to handle existing data
+  stock        Int             @default(0)
+  description  String?
+  imageUrl     String?
+  // Cost breakdown components
+  materialCost Float           @default(0)
+  laborCost    Float           @default(0)
+  shippingCost Float           @default(0)
+  overheadCost Float           @default(0)
+  otherCost    Float           @default(0)
+  // Profitability metrics
+  totalSales   Int             @default(0)
+  totalRevenue Float           @default(0)
+  totalCost    Float           @default(0)
+  totalProfit  Float           @default(0)
+  profitMargin Float           @default(0)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  sales        Sale[]
+  StockHistory StockHistory[]
+}
+
+model PaymentMethod {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sales       Sale[]
+}
+
+model ProductCategory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products    Product[]
+}
+
+model Supplier {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  email          String?         @unique
+  phone          String?
+  address        String?
+  city           String?
+  state          String?
+  zipCode        String?
+  country        String?
+  contactPerson  String?
+  notes          String?
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  products       Product[]
+  purchaseOrders PurchaseOrder[]
+}
+
+model PurchaseOrder {
+  id           String              @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber  String              @unique
+  supplierId   String              @db.ObjectId
+  supplier     Supplier            @relation(fields: [supplierId], references: [id])
+  status       PurchaseOrderStatus @default(PENDING)
+  orderDate    DateTime            @default(now())
+  expectedDate DateTime?
+  receivedDate DateTime?
+  totalAmount  Float               @default(0)
+  notes        String?
+  items        Json // Store array of order items
+  assignedTo   String? // "BURN_BOX" or "APPAREL"
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  invoices     Invoice[]
+}
+
+enum PurchaseOrderStatus {
+  PENDING
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+model Invoice {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceNumber   String        @unique
+  purchaseOrderId String        @db.ObjectId
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  status          InvoiceStatus @default(PENDING_REVIEW)
+  invoiceDate     DateTime
+  dueDate         DateTime?
+  totalAmount     Float
+  taxAmount       Float         @default(0)
+  discountAmount  Float         @default(0)
+  fileUrl         String?
+  fileName        String?
+  fileType        String?
+  fileSize        Int?
+  reviewedBy      String?       @db.ObjectId
+  reviewedAt      DateTime?
+  notes           String?
+  verifiedAt      DateTime?
+  extractedData   Json? // Store extracted invoice data for verification
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum InvoiceStatus {
+  PENDING_REVIEW
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  PAID
+}
+
+model StockHistory {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId       String?  @db.ObjectId
+  product         Product? @relation(fields: [productId], references: [id])
+  stockLevel      Int
+  date            DateTime
+  userId          String   @db.ObjectId
+  user            User     @relation(fields: [userId], references: [id])
+  reason          String?
+  transactionType String? // "STOCK_ADDED", "STOCK_ADJUSTED", "SALE", "OPENING_STOCK", "STOCK_RETURN"
+  previousStock   Int?
+  newStock        Int?
+  itemType        String?  @default("PRODUCT") // "PRODUCT" or "RECIPE"
+  itemName        String? // Store name for recipes or products
+  itemSku         String? // Store SKU for recipes or products
+  createdAt       DateTime @default(now())
+}
+
+model Sale {
+  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
+  orderId            String? // Group items purchased together
+  productId          String         @db.ObjectId
+  product            Product        @relation(fields: [productId], references: [id])
+  userId             String         @db.ObjectId
+  user               User           @relation(fields: [userId], references: [id])
+  customerId         String?        @db.ObjectId
+  customer           User?          @relation("CustomerSales", fields: [customerId], references: [id])
+  paymentMethodId    String?        @db.ObjectId
+  paymentMethod      PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+  quantity           Int
+  returnedQuantity   Int            @default(0)
+  unitPrice          Float? // Price at time of sale
+  lineTotal          Float? // Total for this line item
+  totalPrice         Float? // Total for the order
+  discountPercentage Float          @default(0)
+  discountAmount     Float?         @default(0)
+  taxAmount          Float?         @default(0)
+  totalAmount        Float? // Final amount including tax
+  saleDate           DateTime       @default(now())
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model AuditLog {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String?     @db.ObjectId
+  user          User?       @relation(fields: [userId], references: [id])
+  actionType    AuditAction
+  entityType    String
+  entityId      String?
+  description   String
+  previousValue String?
+  newValue      String?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime    @default(now())
+}
+
+enum AuditAction {
+  SALE_CREATED
+  SALE_ADJUSTED
+  SALE_DELETED
+  INVENTORY_UPDATED
+  INVOICE_UPLOADED
+  INVOICE_APPROVED
+  ADJUSTMENT_MADE
+  PRODUCT_ADDED
+  PRODUCT_DELETED
+  PRODUCT_UPDATED
+  PRODUCT_DUPLICATED
+  PRODUCT_BULK_DELETED
+  PRODUCT_BULK_EDITED
+  PRODUCT_BULK_DUPLICATED
+  STOCK_ADDED
+  STOCK_ADJUSTED
+  SUPPLIER_ADDED
+  SUPPLIER_UPDATED
+  SUPPLIER_DELETED
+  PURCHASE_ORDER_CREATED
+  PURCHASE_ORDER_UPDATED
+  PURCHASE_ORDER_RECEIVED
+  INVOICE_VERIFIED
+  INVOICE_REJECTED
+}
+
+model IngredientCategory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Ingredient {
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  sku              String             @unique
+  category         String
+  description      String?
+  unit             UnitOfMeasurement
+  quantity         Float              @default(0)
+  costPerUnit      Float              @default(0)
+  supplier         String?
+  minStockLevel    Float              @default(0)
+  currentStock     Float              @default(0)
+  bulkQuantity     Float?
+  bulkUnit         UnitOfMeasurement?
+  conversionFactor Float?
+  expiryDate       DateTime?
+  location         String?
+  imageUrl         String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+enum UnitOfMeasurement {
+  POUND
+  OUNCE
+  GRAM
+  KILOGRAM
+  SCOOP
+  TABLESPOON
+  TEASPOON
+  CUP
+  LITER
+  MILLILITER
+  QUART
+  GALLON
+  CAN
+  COUNT
+}
+
+model Recipe {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  sku             String   @unique
+  category        String
+  description     String?
+  ingredients     Json // Store array of recipe ingredients
+  totalCost       Float    @default(0)
+  sellingPrice    Float    @default(0)
+  profitMargin    Float    @default(0)
+  profitPerUnit   Float    @default(0)
+  preparationTime Int? // in minutes
+  servings        Int?
+  instructions    Json? // Store array of instructions
+  imageUrl        String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model IngredientAdjustment {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  ingredientId   String         @db.ObjectId
+  ingredientName String
+  ingredientSku  String
+  adjustmentType AdjustmentType
+  previousStock  Float
+  newStock       Float
+  quantity       Float
+  unit           String
+  reason         String
+  userId         String         @db.ObjectId
+  userName       String
+  date           DateTime
+  costImpact     Float
+  isDiscrepancy  Boolean        @default(false)
+  resolved       Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+}
+
+enum AdjustmentType {
+  WASTAGE
+  DAMAGE
+  EXPIRY
+  PHYSICAL_COUNT
+  THEFT
+  OTHER
+}
+
+model BurnBoxSale {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId             String?
+  recipeId            String   @db.ObjectId
+  recipeName          String
+  recipeSku           String
+  quantity            Int
+  unitPrice           Float
+  totalPrice          Float
+  ingredientCost      Float
+  profit              Float
+  profitMargin        Float
+  ingredientsDeducted Json // Store array of ingredients deducted
+  userId              String   @db.ObjectId
+  userName            String
+  customerId          String?  @db.ObjectId
+  customerName        String?
+  saleDate            DateTime
+  paymentMethodId     String?  @db.ObjectId
+  paymentMethod       String?
+  notes               String?
+  createdAt           DateTime @default(now())
+}
+
+model GymMasterSale {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  externalId  String   @unique // GymMaster's unique transaction ID
+  dateTime    DateTime
+  orderNumber String?
+  product     String
+  type        String
+  amount      Float
+  quantity    Int      @default(1)
+  location    String   @default("burn-box")
+  rawResponse String // Store the full API response for reference
+  lastSyncAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ReportBookmark {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  reportId    String // The report route/identifier
+  reportTitle String // For display purposes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, reportId])
+}
+
+model Settings {
+  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
+  businessName              String?  @default("Burn Box")
+  businessEmail             String?
+  businessPhone             String?
+  businessAddress           String?
+  businessCity              String?
+  businessState             String?
+  businessZip               String?
+  businessCountry           String?  @default("USA")
+  weeklyReportRecipients    String? // JSON array of email addresses
+  weeklyReportSchedule      String? // Cron schedule (e.g., "0 9 * * 1" for Monday 9 AM)
+  weeklyReportEnabled       Boolean  @default(false)
+  gymMasterClientId         String?
+  gymMasterApiKey           String?
+  gymMasterSyncEnabled      Boolean  @default(false)
+  quickBooksAccountId       String?
+  quickBooksApiKey          String?
+  quickBooksSyncEnabled     Boolean  @default(false)
+  quickBooksMapping         Json? // Store mapping of accounts/categories
+  geminiApiKey              String?
+  geminiExtractionEnabled   Boolean  @default(false)
+  unitConversionRules       Json? // Store unit conversion rules
+  emailNotificationsEnabled Boolean  @default(true)
+  lowStockAlertsEnabled     Boolean  @default(true)
+  lowStockThreshold         Int      @default(10)
+  salesReportsEnabled       Boolean  @default(true)
+  inventoryAlertsEnabled    Boolean  @default(true)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+model Feedback {
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String           @db.ObjectId
+  user       User             @relation(fields: [userId], references: [id])
+  category   FeedbackCategory
+  subject    String
+  message    String
+  priority   FeedbackPriority @default(MEDIUM)
+  status     FeedbackStatus   @default(OPEN)
+  screenshot String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
+
+enum FeedbackCategory {
+  BUG_REPORT
+  FEATURE_REQUEST
+  UI_IMPROVEMENT
+  PERFORMANCE
+  SECURITY
+  OTHER
+}
+
+enum FeedbackPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum FeedbackStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model WeeklyReport {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  weekStart   DateTime
+  weekEnd     DateTime
+  reportData  Json // Store the complete report data
+  generatedAt DateTime     @default(now())
+  sentAt      DateTime?
+  recipients  String[] // List of email addresses it was sent to
+  status      ReportStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum ReportStatus {
+  PENDING
+  SENT
+  FAILED
+}
