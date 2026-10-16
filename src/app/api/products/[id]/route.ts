@@ -29,8 +29,10 @@ export async function GET(
       sku: product.sku,
       category: product.category?.name || product.category,
       categoryId: product.categoryId,
-      size: "N/A",
-      color: "N/A",
+      size: product.size || "",
+      color: product.color || "",
+      variant: product.variant || "",
+      supplier: product.supplierId || "",
       stock: product.stock,
       price: product.sellingPrice,
       status: product.stock === 0 ? "Out of Stock" : product.stock < 10 ? "Low Stock" : "In Stock",
@@ -58,7 +60,7 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const { name, sku, category, categoryId, size, color, stock, price, description, materialCost, laborCost, shippingCost, overheadCost, otherCost } = body
+    const { name, sku, category, categoryId, size, color, variant, stock, price, description, materialCost, laborCost, shippingCost, overheadCost, otherCost, supplier } = body
 
     // Support both old category name and new categoryId
     let finalCategoryId = categoryId
@@ -103,12 +105,19 @@ export async function PUT(
       }
     }
 
+    // Auto-calculate variant if not provided
+    const finalVariant = variant || ((size || color) ? `${size || ""} / ${color || ""}`.trim() : null)
+
     const product = await prisma.product.update({
       where: { id },
       data: {
         name,
         sku,
         categoryId: finalCategoryId,
+        size: size || null,
+        color: color || null,
+        variant: finalVariant,
+        supplierId: supplier && supplier !== "N/A" ? supplier : undefined,
         sellingPrice: parseFloat(price),
         stock: parseInt(stock),
         description,

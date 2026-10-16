@@ -125,7 +125,22 @@ export function CreateProductSheet({ onProductCreated }: CreateProductSheetProps
   }
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value }
+
+      // Auto-calculate variant when size or color changes
+      if (field === "size" || field === "color") {
+        const size = field === "size" ? value : prev.size
+        const color = field === "color" ? value : prev.color
+        if (size || color) {
+          updated.variant = `${size || ""} / ${color || ""}`.trim()
+        } else {
+          updated.variant = ""
+        }
+      }
+
+      return updated
+    })
   }
 
   const materialCost = parseFloat(formData.materialCost) || 0

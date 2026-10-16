@@ -37,7 +37,7 @@ export async function POST(request: Request) {
             categoryId: product.categoryId,
             size: product.size,
             color: product.color,
-            variant: product.variant,
+            variant: product.variant || ((product.size || product.color) ? `${product.size || ""} / ${product.color || ""}`.trim() : ""),
             supplierId: product.supplierId,
             costPrice: product.costPrice,
             materialCost: product.materialCost,

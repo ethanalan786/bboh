@@ -37,6 +37,7 @@ const emptyForm = {
   category: "",
   size: "",
   color: "",
+  variant: "",
   stock: "0",
   price: "",
   description: "",
@@ -134,6 +135,7 @@ export function EditProductSheet({ product, open, onOpenChange, onProductUpdated
         category: product.category || "",
         size: product.size || "",
         color: product.color || "",
+        variant: product.variant || "",
         stock: String(product.stock || 0),
         price: String(product.sellingPrice || product.price || 0),
         description: product.description || "",
@@ -150,7 +152,22 @@ export function EditProductSheet({ product, open, onOpenChange, onProductUpdated
   }, [product])
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value }
+
+      // Auto-calculate variant when size or color changes
+      if (field === "size" || field === "color") {
+        const size = field === "size" ? value : prev.size
+        const color = field === "color" ? value : prev.color
+        if (size || color) {
+          updated.variant = `${size || ""} / ${color || ""}`.trim()
+        } else {
+          updated.variant = ""
+        }
+      }
+
+      return updated
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -227,6 +244,7 @@ export function EditProductSheet({ product, open, onOpenChange, onProductUpdated
           category: formData.category,
           size: formData.size,
           color: formData.color,
+          variant: formData.variant,
           stock: stockNum,
           price: priceNum,
           description: formData.description,
@@ -235,7 +253,7 @@ export function EditProductSheet({ product, open, onOpenChange, onProductUpdated
           shippingCost: shippingCostNum,
           overheadCost: overheadCostNum,
           otherCost: otherCostNum,
-          supplier: formData.supplier,
+          supplier: formData.supplier || undefined,
         }),
       })
 
@@ -383,6 +401,16 @@ export function EditProductSheet({ product, open, onOpenChange, onProductUpdated
                     placeholder="Black, Red…"
                     value={formData.color}
                     onChange={(e) => handleInputChange("color", e.target.value)}
+                    className="h-9"
+                  />
+                </Field>
+
+                <Field label="Variant label" htmlFor="variant">
+                  <Input
+                    id="variant"
+                    placeholder="S / Black"
+                    value={formData.variant}
+                    onChange={(e) => handleInputChange("variant", e.target.value)}
                     className="h-9"
                   />
                 </Field>

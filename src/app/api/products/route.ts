@@ -124,7 +124,7 @@ export async function GET(request: Request) {
           size: p.size || "N/A",
           color: p.color || "N/A",
           variant: p.variant || "N/A",
-          supplier: p.supplier || "N/A",
+          supplier: p.supplierId || "N/A",
           stock: p.stock,
           costPrice: costPrice,
           sellingPrice: sellingPrice,
@@ -377,6 +377,9 @@ export async function POST(request: Request) {
     // Calculate total cost from breakdown components
     const totalCostValue = materialCost + laborCost + shippingCost + overheadCost + otherCost
 
+    // Auto-calculate variant if not provided
+    const finalVariant = variant || ((size || color) ? `${size || ""} / ${color || ""}`.trim() : null)
+
     const product = await prisma.product.create({
       data: {
         name,
@@ -384,8 +387,8 @@ export async function POST(request: Request) {
         categoryId: finalCategoryId,
         size: size || null,
         color: color || null,
-        variant: variant || null,
-        supplierId: supplier || undefined,
+        variant: finalVariant,
+        supplierId: supplier && supplier !== "N/A" ? supplier : undefined,
         costPrice: totalCostValue,
         materialCost: materialCost,
         laborCost: laborCost,
