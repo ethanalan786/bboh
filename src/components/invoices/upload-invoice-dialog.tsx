@@ -292,23 +292,23 @@ export function UploadInvoiceDialog({
     if (!extractedSupplier || suppliersList.length === 0) return null
 
     const normalizedExtracted = extractedSupplier.toLowerCase().trim()
-    
+
     // Try exact match first
-    const exactMatch = suppliersList.find(s => 
-      s.name.toLowerCase() === normalizedExtracted
+    const exactMatch = suppliersList.find(s =>
+      s.name?.toLowerCase() === normalizedExtracted
     )
     if (exactMatch) return exactMatch
 
     // Try partial match
-    const partialMatch = suppliersList.find(s => 
-      s.name.toLowerCase().includes(normalizedExtracted) ||
-      normalizedExtracted.includes(s.name.toLowerCase())
+    const partialMatch = suppliersList.find(s =>
+      (s.name?.toLowerCase() || "").includes(normalizedExtracted) ||
+      normalizedExtracted.includes(s.name?.toLowerCase() || "")
     )
     if (partialMatch) return partialMatch
 
     // Try email match if available
-    const emailMatch = suppliersList.find(s => 
-      s.email && s.email.toLowerCase().includes(normalizedExtracted)
+    const emailMatch = suppliersList.find(s =>
+      s.email?.toLowerCase().includes(normalizedExtracted)
     )
     if (emailMatch) return emailMatch
 

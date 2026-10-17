@@ -230,10 +230,10 @@ export default function SalesPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (s) =>
-          s.productName.toLowerCase().includes(query) ||
-          s.productSku.toLowerCase().includes(query) ||
-          s.userName.toLowerCase().includes(query) ||
-          s.customerName?.toLowerCase().includes(query)
+          (s.productName?.toLowerCase() || "").includes(query) ||
+          (s.productSku?.toLowerCase() || "").includes(query) ||
+          (s.userName?.toLowerCase() || "").includes(query) ||
+          (s.customerName?.toLowerCase() || "").includes(query)
       )
     }
 

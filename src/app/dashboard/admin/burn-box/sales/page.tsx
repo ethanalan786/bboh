@@ -185,11 +185,11 @@ export default function BurnBoxSalesPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (s) =>
-          s.recipeName.toLowerCase().includes(query) ||
-          s.recipeSku.toLowerCase().includes(query) ||
-          s.userName.toLowerCase().includes(query) ||
-          (s.customerName && s.customerName.toLowerCase().includes(query)) ||
-          (s.orderId && s.orderId.toLowerCase().includes(query))
+          (s.recipeName?.toLowerCase() || "").includes(query) ||
+          (s.recipeSku?.toLowerCase() || "").includes(query) ||
+          (s.userName?.toLowerCase() || "").includes(query) ||
+          (s.customerName?.toLowerCase() || "").includes(query) ||
+          (s.orderId?.toLowerCase() || "").includes(query)
       )
     }
 

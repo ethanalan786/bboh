@@ -205,11 +205,11 @@ export default function SuppliersPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (s) =>
-          s.name.toLowerCase().includes(query) ||
-          s.email?.toLowerCase().includes(query) ||
-          s.phone?.includes(query) ||
-          s.contactPerson?.toLowerCase().includes(query) ||
-          s.city?.toLowerCase().includes(query)
+          (s.name?.toLowerCase() || "").includes(query) ||
+          (s.email?.toLowerCase() || "").includes(query) ||
+          (s.phone || "").includes(query) ||
+          (s.contactPerson?.toLowerCase() || "").includes(query) ||
+          (s.city?.toLowerCase() || "").includes(query)
       )
     }
 

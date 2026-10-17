@@ -192,8 +192,8 @@ const RecentSales = () => {
 
   // Helper function to get product visual
   const getProductVisual = (name: string, category: string, size: 'large' | 'small' = 'large'): React.ReactNode => {
-    const lowerName = name.toLowerCase()
-    
+    const lowerName = name?.toLowerCase() || ""
+
     if (category === 'BURN_BOX') {
       if (lowerName.includes('protein')) {
         if (size === 'small') {

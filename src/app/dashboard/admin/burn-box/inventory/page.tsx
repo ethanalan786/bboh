@@ -209,9 +209,9 @@ export default function BurnBoxInventoryPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (i) =>
-          i.name.toLowerCase().includes(query) ||
-          i.sku.toLowerCase().includes(query) ||
-          i.category.toLowerCase().includes(query)
+          (i.name?.toLowerCase() || "").includes(query) ||
+          (i.sku?.toLowerCase() || "").includes(query) ||
+          (i.category?.toLowerCase() || "").includes(query)
       )
     }
 

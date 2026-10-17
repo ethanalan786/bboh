@@ -188,10 +188,10 @@ export default function AdjustmentsPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (a) =>
-          a.ingredientName.toLowerCase().includes(query) ||
-          a.ingredientSku.toLowerCase().includes(query) ||
-          a.reason.toLowerCase().includes(query) ||
-          a.userName.toLowerCase().includes(query)
+          (a.ingredientName?.toLowerCase() || "").includes(query) ||
+          (a.ingredientSku?.toLowerCase() || "").includes(query) ||
+          (a.reason?.toLowerCase() || "").includes(query) ||
+          (a.userName?.toLowerCase() || "").includes(query)
       )
     }
 

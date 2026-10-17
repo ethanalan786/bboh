@@ -102,16 +102,16 @@ export default function AuditTrailContent() {
   }, []);
 
   const filteredLogs = auditLogs.filter(log => {
-    const matchesSearch = 
+    const matchesSearch =
       searchQuery === "" ||
-      (log.user?.name && log.user.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (log.user?.email && log.user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      log.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (log.entityId && log.entityId.toLowerCase().includes(searchQuery.toLowerCase()));
-    
+      (log.user?.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (log.user?.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (log.description?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (log.entityId?.toLowerCase() || "").includes(searchQuery.toLowerCase());
+
     const matchesAction = actionFilter === "all" || log.actionType === actionFilter;
     const matchesEntity = entityFilter === "all" || log.entityType === entityFilter;
-    
+
     return matchesSearch && matchesAction && matchesEntity;
   });
 

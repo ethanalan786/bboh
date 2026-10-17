@@ -134,10 +134,10 @@ export default function ProductInventoryPage() {
       const query = transactionSearch.toLowerCase()
       filtered = filtered.filter(
         (t) =>
-          t.productName.toLowerCase().includes(query) ||
-          t.productSku.toLowerCase().includes(query) ||
-          t.userName.toLowerCase().includes(query) ||
-          t.reason.toLowerCase().includes(query)
+          (t.productName?.toLowerCase() || "").includes(query) ||
+          (t.productSku?.toLowerCase() || "").includes(query) ||
+          (t.userName?.toLowerCase() || "").includes(query) ||
+          (t.reason?.toLowerCase() || "").includes(query)
       )
     }
 

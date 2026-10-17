@@ -200,8 +200,8 @@ export function RecipeDialog({ open, onOpenChange, onSubmit, editData, isLoading
   }
 
   const filteredIngredients = availableIngredients.filter(ingredient =>
-    ingredient.name.toLowerCase().includes(ingredientSearch.toLowerCase()) ||
-    ingredient.sku.toLowerCase().includes(ingredientSearch.toLowerCase())
+    (ingredient.name?.toLowerCase() || "").includes(ingredientSearch.toLowerCase()) ||
+    (ingredient.sku?.toLowerCase() || "").includes(ingredientSearch.toLowerCase())
   )
 
   const removeIngredient = (index: number) => {

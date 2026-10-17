@@ -132,8 +132,8 @@ const UsersPage = () => {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (u) =>
-          u.name.toLowerCase().includes(query) ||
-          u.email.toLowerCase().includes(query)
+          (u.name?.toLowerCase() || "").includes(query) ||
+          (u.email?.toLowerCase() || "").includes(query)
       )
     }
 

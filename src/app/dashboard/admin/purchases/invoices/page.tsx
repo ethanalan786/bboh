@@ -241,9 +241,9 @@ export default function InvoicesPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (order) =>
-          order.orderNumber.toLowerCase().includes(query) ||
-          order.supplier.name.toLowerCase().includes(query) ||
-          order.supplier.email?.toLowerCase().includes(query)
+          (order.orderNumber?.toLowerCase() || "").includes(query) ||
+          (order.supplier?.name?.toLowerCase() || "").includes(query) ||
+          (order.supplier?.email?.toLowerCase() || "").includes(query)
       )
     }
 

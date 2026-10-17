@@ -153,8 +153,8 @@ const HoodieVisual = React.memo(() => (
 
 // Move outside component to avoid recreation on every render
 const getProductVisual = (name: string, category: string): React.ReactNode => {
-  const lowerName = name.toLowerCase();
-  
+  const lowerName = name?.toLowerCase() || "";
+
   if (category === 'BURN_BOX') {
     if (lowerName.includes('protein')) return <SmoothieCup color="pink" />;
     if (lowerName.includes('green')) return <SmoothieCup color="green" />;
@@ -162,7 +162,7 @@ const getProductVisual = (name: string, category: string): React.ReactNode => {
     if (lowerName.includes('energy')) return <EnergyDrinkCan />;
     return <SmoothieCup color="pink" />;
   }
-  
+
   // Apparel
   if (lowerName.includes('t-shirt') || lowerName.includes('tee')) return <TShirtVisual />;
   if (lowerName.includes('legging')) return <LeggingsVisual />;
@@ -683,18 +683,18 @@ const RecordSale = () => {
   };
 
   // ── Derived values (memoized for performance) ────────────────────────
-  const filteredBurnBox = useMemo(() => 
+  const filteredBurnBox = useMemo(() =>
     ALL_PRODUCTS.filter((p) => {
       const matchesCategory = p.category === "Burn Box" && (activeTab === "All Products" || activeTab === "Burn Box");
-      const matchesSearch = searchQuery === '' || p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = searchQuery === '' || (p.name?.toLowerCase() || "").includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     }), [ALL_PRODUCTS, activeTab, searchQuery]
   );
 
-  const filteredApparel = useMemo(() => 
+  const filteredApparel = useMemo(() =>
     ALL_PRODUCTS.filter((p) => {
       const matchesCategory = p.category === "Apparel" && (activeTab === "All Products" || activeTab === "Apparel");
-      const matchesSearch = searchQuery === '' || p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = searchQuery === '' || (p.name?.toLowerCase() || "").includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     }), [ALL_PRODUCTS, activeTab, searchQuery]
   );

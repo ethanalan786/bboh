@@ -259,9 +259,9 @@ export default function ProductsPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.sku.toLowerCase().includes(query) ||
-          p.category.toLowerCase().includes(query)
+          (p.name?.toLowerCase() || "").includes(query) ||
+          (p.sku?.toLowerCase() || "").includes(query) ||
+          (p.category?.toLowerCase() || "").includes(query)
       )
     }
 

@@ -185,9 +185,9 @@ export default function RecipesPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (r) =>
-          r.name.toLowerCase().includes(query) ||
-          r.sku.toLowerCase().includes(query) ||
-          r.category.toLowerCase().includes(query)
+          (r.name?.toLowerCase() || "").includes(query) ||
+          (r.sku?.toLowerCase() || "").includes(query) ||
+          (r.category?.toLowerCase() || "").includes(query)
       )
     }
 

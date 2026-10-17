@@ -242,14 +242,14 @@ export function GooeyInput<T = any>({
     
     // Client-side filtering
     const searchLower = searchText.toLowerCase();
-    
+
     return resultsToFilter.filter(result => {
       if (filterFunction) {
         return filterFunction(result, searchText);
       }
       // Default filter: search in label and data fields
-      const labelMatch = result.label.toLowerCase().includes(searchLower);
-      const dataMatch = result.data && typeof result.data === 'object' 
+      const labelMatch = (result.label?.toLowerCase() || "").includes(searchLower);
+      const dataMatch = result.data && typeof result.data === 'object'
         ? Object.values(result.data).some((value: any) =>
             value && typeof value === 'string' && value.toLowerCase().includes(searchLower)
           )

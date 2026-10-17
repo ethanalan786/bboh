@@ -199,8 +199,8 @@ const StockAvailability = () => {
     return products.filter((p) => {
       const matchesQuery =
         query.trim() === "" ||
-        p.name.toLowerCase().includes(query.toLowerCase()) ||
-        p.sku.toLowerCase().includes(query.toLowerCase()) ||
+        (p.name?.toLowerCase() || "").includes(query.toLowerCase()) ||
+        (p.sku?.toLowerCase() || "").includes(query.toLowerCase()) ||
         (CATEGORY_LABELS[p.category] ?? p.category).toLowerCase().includes(query.toLowerCase()) ||
         ((p as any).isRecipe && "recipe".includes(query.toLowerCase()));
       const matchesCategory = categoryFilter === "all" || p.category === categoryFilter;
