@@ -162,7 +162,7 @@ export default function Page() {
       <LeftPanel />
 
       {/* RIGHT */}
-      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen bg-black dark:bg-[#F7F8F2] px-6 py-14 overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen bg-black dark:bg-[#F7F8F2] px-4 sm:px-6 py-10 sm:py-14 overflow-hidden">
 
         {/* Soft radial glow */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
@@ -186,18 +186,18 @@ export default function Page() {
 
           {/* Heading */}
           <h1
-            className="text-[1.75rem] font-bold text-center text-white dark:text-[#182015] leading-tight mb-2"
+            className="text-[1.5rem] sm:text-[1.75rem] font-bold text-center text-white dark:text-[#182015] leading-tight mb-2"
             style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}
           >
             Let&apos;s get back to <em className="text-[#9DBD61] dark:text-[#668E2B]">work</em>
           </h1>
 
-          <p className="text-sm text-center text-[#A9AAA0] dark:text-[#5F675C] mb-8">
+          <p className="text-sm text-center text-[#A9AAA0] dark:text-[#5F675C] mb-6 sm:mb-8">
             Sign in to pick up where you left off.
           </p>
 
           {/* Card */}
-          <div className="w-full rounded-2xl border border-[#3a3a3a] bg-[#1a1a1a]/80 backdrop-blur-sm p-8 shadow-xl shadow-[#31412B]/10 dark:border-[#D8DDD1] dark:bg-white/80">
+          <div className="w-full rounded-2xl border border-[#3a3a3a] bg-[#1a1a1a]/80 backdrop-blur-sm p-6 sm:p-8 shadow-xl shadow-[#31412B]/10 dark:border-[#D8DDD1] dark:bg-white/80">
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               {error && (
                 <Item variant="outline" className="border-rose-500/50 dark:bg-rose-50 bg-rose-950/20">

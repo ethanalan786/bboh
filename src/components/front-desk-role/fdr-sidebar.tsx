@@ -72,7 +72,7 @@ export default function fdrSidebar() {
     const activeNav = NAV_ITEMS.find(item => pathname === item.href)?.label || "Front Desk";
 
     return (
-        <aside className="w-62 flex-shrink-0 flex flex-col bg-white dark:bg-black border-r border-gray-200 dark:border-[#1e1e1e]">
+        <aside className="hidden lg:flex w-62 flex-shrink-0 flex-col bg-white dark:bg-black border-r border-gray-200 dark:border-[#1e1e1e]">
             {/* Logo */}
             <div className="px-4 pt-[10px]">
                 <Image

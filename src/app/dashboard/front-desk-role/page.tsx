@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
+import { Menu } from 'lucide-react';
 import { format } from "date-fns";
 import {
   ArrowRight,
@@ -20,10 +21,15 @@ import {
   Package,
   PackageSearch,
   ShoppingCart,
-  TrendingUp
+  TrendingUp,
+  Home,
+  Edit,
+  History,
+  User,
 } from "lucide-react";
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useCallback } from 'react';
 
@@ -69,6 +75,20 @@ type SaleResponse = {
 };
 
 // ─────────────────────────────────────────────
+// Navigation items
+// ─────────────────────────────────────────────
+
+const NAV_ITEMS = [
+  { icon: Home, label: "Front Desk", href: "/dashboard/front-desk-role" },
+  { icon: ShoppingCart, label: "Record a Sale", href: "/dashboard/front-desk-role/record-sale" },
+  { icon: Package, label: "Stock Availability", href: "/dashboard/front-desk-role/stock" },
+  { icon: History, label: "Stock History", href: "/dashboard/front-desk-role/stock/history" },
+  { icon: Clock, label: "My Recent Sales", href: "/dashboard/front-desk-role/sales" },
+  { icon: Edit, label: "Adjustments", href: "/dashboard/front-desk-role/adjustments" },
+  { icon: User, label: "Customers", href: "/dashboard/front-desk-role/customers" },
+];
+
+// ─────────────────────────────────────────────
 // Sub-components
 // ─────────────────────────────────────────────
 
@@ -97,6 +117,7 @@ const FrontDeskRoleDashboard = () => {
   const [recentSales, setRecentSales] = useState<Sale[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     // Role-based access control
@@ -533,18 +554,28 @@ const FrontDeskRoleDashboard = () => {
       {/* ── Main area ───────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="h-20 shrink-0 flex items-center justify-between px-6 gap-4 border-b border-neutral-200 dark:border-[#1a1a1a] dark:bg-black">
+        <header className="h-20 shrink-0 flex items-center justify-between px-4 sm:px-6 gap-4 border-b border-neutral-200 dark:border-[#1a1a1a] dark:bg-black">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          >
+            <Menu size={24} className="text-neutral-600 dark:text-neutral-300" />
+          </button>
+
           {/* Search */}
-          <GooeyInput 
-            placeholder="Search products, recipes, sales, customers..." 
-            onServerSearch={handleServerSearch}
-            onResultSelect={handleSearchResultSelect}
-            renderResult={renderSearchResult}
-            searchDebounce={300}
-            minSearchLength={2}
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-          />
+          <div className="flex-1">
+            <GooeyInput
+              placeholder="Search products, recipes, sales, customers..."
+              onServerSearch={handleServerSearch}
+              onResultSelect={handleSearchResultSelect}
+              renderResult={renderSearchResult}
+              searchDebounce={300}
+              minSearchLength={2}
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+            />
+          </div>
 
           {/* Right side */}
           <div className="flex items-center gap-3">
@@ -553,12 +584,36 @@ const FrontDeskRoleDashboard = () => {
           </div>
         </header>
 
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-b border-neutral-200 dark:border-[#1e1e1e] bg-white dark:bg-black">
+            <nav className="p-4 space-y-2">
+              {NAV_ITEMS.map(({ icon: Icon, label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-colors",
+                    pathname === href
+                      ? "bg-neutral-100 dark:bg-[#1e1e1e] text-neutral-900 dark:text-neutral-100"
+                      : "text-neutral-600 dark:text-[#bbbdbb] hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-[#161616]"
+                  )}
+                >
+                  <Icon size={19} />
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
+
         {/* Scrollable content */}
         <main className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* ── Page header ──────────────────────── */}
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <h1 className="text-[28px] font-saprona-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+              <h1 className="text-[24px] sm:text-[28px] font-saprona-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
                 {greeting}, {session?.user?.name?.split(' ')[0] || "John"}!
               </h1>
               <p className="text-neutral-600 dark:text-neutral-400 text-sm mt-1">
@@ -569,8 +624,8 @@ const FrontDeskRoleDashboard = () => {
             {/* Date card */}
             <Popover>
               <PopoverTrigger>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors cursor-pointer ${
                     date.toDateString() === new Date().toDateString()
                       ? 'bg-neutral-100 dark:bg-[#141414] border border-gray-200 dark:border-[#1e1e1e] hover:bg-neutral-200 dark:hover:bg-[#1a1a1a]'
@@ -582,13 +637,13 @@ const FrontDeskRoleDashboard = () => {
                       ? 'bg-neutral-200 dark:bg-[#1e1e1e]'
                       : 'bg-[#c8f135]/20'
                   }`}>
-                    <Clock 
-                      size={15} 
+                    <Clock
+                      size={15}
                       className={
                         date.toDateString() === new Date().toDateString()
                           ? 'text-neutral-500 dark:text-neutral-400'
                           : 'text-[#c8f135]'
-                      } 
+                      }
                     />
                   </div>
                   <div className="text-left">
@@ -626,7 +681,7 @@ const FrontDeskRoleDashboard = () => {
           </div>
 
           {/* ── Action cards ─────────────────────── */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Burn Box Sale */}
             <ActionCard
               iconBg="bg-emerald-950/60"
@@ -671,10 +726,10 @@ const FrontDeskRoleDashboard = () => {
           </div>
 
           {/* ── Lower grid ───────────────────────── */}
-          <div className="grid grid-cols-[3fr_2fr] gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4">
             <div className="flex flex-col gap-5">
               {/* Stock overview */}
-              <div className="bg-white dark:bg-[#0b0c0d] border border-neutral-200 dark:border-[#1e1e1e] rounded-2xl p-5">
+              <div className="bg-white dark:bg-[#0b0c0d] border border-neutral-200 dark:border-[#1e1e1e] rounded-2xl p-4 md:p-5">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <Box size={15} className="text-neutral-400 dark:text-neutral-500" />
@@ -690,12 +745,12 @@ const FrontDeskRoleDashboard = () => {
                   </button>
                 </div>
                 <p className="text-xs text-neutral-400 dark:text-neutral-600 mb-4">
-                  {date.toDateString() === new Date().toDateString() 
-                    ? 'Current available stock (selected items)' 
+                  {date.toDateString() === new Date().toDateString()
+                    ? 'Current available stock (selected items)'
                     : `Stock overview for ${format(date, 'PPP')} (items sold on this date)`}
                 </p>
 
-                <div className="grid grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                   {loading ? (
                     <div className="col-span-5 flex items-center justify-center py-8">
                       <div className="w-6 h-6 border-2 border-gray-900 dark:border-white border-t-transparent rounded-full animate-spin" />
@@ -792,7 +847,7 @@ const FrontDeskRoleDashboard = () => {
               </div>
             </div>
             {/* Recent sales */}
-            <div className="bg-white dark:bg-[#0b0c0d] border border-neutral-200 dark:border-[#1e1e1e] rounded-2xl p-5 flex flex-col">
+            <div className="bg-white dark:bg-[#0b0c0d] border border-neutral-200 dark:border-[#1e1e1e] rounded-2xl p-4 md:p-5 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Clock size={15} className="text-neutral-400 dark:text-neutral-500" />
@@ -813,8 +868,8 @@ const FrontDeskRoleDashboard = () => {
                 </button>
               </div>
 
-              {/* Table header */}
-              <div className="grid grid-cols-[56px_1fr_70px_24px_48px] gap-x-2 text-[11px] text-neutral-400 dark:text-neutral-600 mb-2 px-0.5">
+              {/* Table header - hidden on mobile */}
+              <div className="hidden sm:grid grid-cols-[56px_1fr_70px_24px_48px] gap-x-2 text-[11px] text-neutral-400 dark:text-neutral-600 mb-2 px-0.5">
                 <span>Time</span>
                 <span>Product</span>
                 <span>Type</span>
@@ -823,7 +878,7 @@ const FrontDeskRoleDashboard = () => {
               </div>
 
               {/* Rows */}
-              <div className="flex-1 space-y-px">
+              <div className="flex-1 space-y-px overflow-x-auto">
                 {loading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="w-6 h-6 border-2 border-gray-900 dark:border-white border-t-transparent rounded-full animate-spin" />
@@ -834,8 +889,8 @@ const FrontDeskRoleDashboard = () => {
                       <ShoppingCart size={20} />
                     </div>
                     <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-1">
-                      {date.toDateString() === new Date().toDateString() 
-                        ? 'No Recent Sales' 
+                      {date.toDateString() === new Date().toDateString()
+                        ? 'No Recent Sales'
                         : 'No Sales on This Date'}
                     </h3>
                     <p className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -848,7 +903,7 @@ const FrontDeskRoleDashboard = () => {
                   recentSales.map((sale, i) => (
                     <div
                       key={i}
-                      className="grid grid-cols-[56px_1fr_70px_24px_48px] gap-x-2 items-center py-2 border-b border-gray-100 dark:border-[#1a1a1a] last:border-0"
+                      className="grid grid-cols-[56px_1fr_70px_24px_48px] gap-x-2 items-center py-2 border-b border-gray-100 dark:border-[#1a1a1a] last:border-0 min-w-70"
                     >
                       <span className="text-[11px] text-neutral-400 dark:text-neutral-500 tabular-nums">
                         {sale.time}
@@ -910,18 +965,18 @@ function ActionCard({ iconBg, icon, title, subtitle, visual, href }: ActionCardP
   return (
     <div
       onClick={() => router.push(href)}
-      className="relative bg-neutral-50 dark:bg-[#0b0c0d] border border-gray-200 dark:border-[#1e1e1e] hover:border-gray-300 dark:hover:border-[#2a2a2a] rounded-2xl p-5 overflow-hidden cursor-pointer transition-colors group"
+      className="relative bg-neutral-50 dark:bg-[#0b0c0d] border border-gray-200 dark:border-[#1e1e1e] hover:border-gray-300 dark:hover:border-[#2a2a2a] rounded-2xl p-4 md:p-5 overflow-hidden cursor-pointer transition-colors group"
     >
       <div
         className={cn(
-          "w-18 h-18 rounded-full flex items-center justify-center mb-4",
+          "w-16 h-16 md:w-18 md:h-18 rounded-full flex items-center justify-center mb-4",
           iconBg
         )}
       >
         {icon}
       </div>
-      <p className="text-[22px] font-semibold text-neutral-900 dark:text-neutral-100">{title}</p>
-      <p className="text-md text-neutral-500 dark:text-neutral-400 mt-0.5">{subtitle}</p>
+      <p className="text-[18px] md:text-[22px] font-semibold text-neutral-900 dark:text-neutral-100">{title}</p>
+      <p className="text-sm md:text-md text-neutral-500 dark:text-neutral-400 mt-0.5">{subtitle}</p>
       <button className="mt-4 w-10 h-10 bg-neutral-100 dark:bg-[#1a1a1a] hover:bg-neutral-200 dark:hover:bg-[#252525] border border-neutral-200 dark:border-[#1e1e1e] rounded-full flex items-center justify-center transition-colors">
         <ArrowRight size={18} className="text-neutral-600 dark:text-neutral-300" />
       </button>

@@ -37,31 +37,31 @@ const chartConfig = {
     label: "Earning",
   },
   monday: {
-    label: "Monday",
+    label: "MON",
     color: "var(--chart-1)",
   },
   tuesday: {
-    label: "Tuesday",
+    label: "TUE",
     color: "var(--chart-2)",
   },
   wednesday: {
-    label: "Wednesday",
+    label: "WED",
     color: "var(--chart-3)",
   },
   thursday: {
-    label: "Thursday",
+    label: "THU",
     color: "var(--chart-4)",
   },
   friday: {
-    label: "Friday",
+    label: "FRI",
     color: "var(--chart-5)",
   },
   saturday: {
-    label: "Saturday",
+    label: "SAT",
     color: "var(--chart-5)",
   },
   sunday: {
-    label: "Sunday",
+    label: "SUN",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig
@@ -75,7 +75,7 @@ export function ChartBarActive({ data = defaultChartData, activeIndex = 2 }: Cha
 
   return (
     <div className="h-full w-full">
-        <ChartContainer config={chartConfig} className="h-75">
+        <ChartContainer config={chartConfig} className="h-42 sm:h-75">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis

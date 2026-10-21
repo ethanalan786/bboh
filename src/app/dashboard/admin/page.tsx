@@ -61,7 +61,7 @@ function StatCard({
 }: StatCardProps) {
     const isUp = trend === "up";
     return (
-        <div className="bg-[#0a0a0a] rounded-2xl p-5 flex flex-col justify-between gap-4 border border-white/6">
+        <div className="bg-[#0a0a0a] rounded-2xl p-4 md:p-5 flex flex-col justify-between gap-4 border border-white/6">
             <div className="flex items-center justify-between">
                 <div className="w-9 h-9 rounded-lg bg-white/[0.07] flex items-center justify-center text-white/60">
                     {icon}
@@ -74,13 +74,13 @@ function StatCard({
                 </span>
             </div>
             <div>
-                <p className="text-2xl font-semibold text-white tracking-tight">
+                <p className="text-xl md:text-2xl font-semibold text-white tracking-tight">
                     {value}
                 </p>
                 <p className="text-sm text-white/40 mt-0.5">{label}</p>
             </div>
             <div>
-                <span className="text-xs text-white bg-white/[0.12] px-2.5 py-1 rounded-full">
+                <span className="text-xs text-white bg-white/12 px-2.5 py-1 rounded-full">
                     {period}
                 </span>
             </div>
@@ -90,7 +90,7 @@ function StatCard({
 
 function StatCardSkeleton() {
     return (
-        <div className="bg-[#0a0a0a] rounded-2xl p-5 flex flex-col justify-between gap-4 border border-white/6">
+        <div className="bg-[#0a0a0a] rounded-2xl p-4 md:p-5 flex flex-col justify-between gap-4 border border-white/6">
             <div className="flex items-center justify-between">
                 <div className="w-9 h-9 rounded-lg bg-white/5 animate-pulse" />
                 <div className="w-16 h-5 rounded bg-white/5 animate-pulse" />
@@ -108,7 +108,7 @@ function StatCardSkeleton() {
 
 function BottomMetricSkeleton() {
     return (
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 text-white/40 text-xs mb-3">
                 <div className="w-3 h-3 rounded bg-white/5 animate-pulse" />
                 <div className="h-3 w-16 rounded bg-white/5 animate-pulse" />
@@ -121,15 +121,15 @@ function BottomMetricSkeleton() {
 
 function EarningInsightsSkeleton() {
     return (
-        <div className="bg-[#0a0a0a] col-span-2 max-w-full rounded-2xl p-5 border border-white/6 flex flex-col gap-5">
+        <div className="bg-[#0a0a0a] col-span-1 md:col-span-2 lg:col-span-2 max-w-full rounded-2xl p-5 border border-white/6 flex flex-col gap-5">
             <div className="flex items-start justify-between">
                 <div>
                     <div className="h-5 w-32 rounded bg-white/5 animate-pulse mb-2" />
                     <div className="h-3 w-48 rounded bg-white/5 animate-pulse" />
                 </div>
             </div>
-            <div className="flex items-end gap-8 justify-between">
-                <div className="w-lg">
+            <div className="flex flex-col lg:flex-row items-end gap-8 justify-between">
+                <div className="w-full lg:w-lg">
                     <div className="flex justify-center gap-2 flex-col pb-5">
                         <div className="flex items-baseline gap-2">
                             <div className="h-16 w-40 rounded bg-white/5 animate-pulse" />
@@ -138,11 +138,11 @@ function EarningInsightsSkeleton() {
                         <div className="h-4 w-64 rounded bg-white/5 animate-pulse mt-1.5" />
                     </div>
                     <Separator orientation="horizontal" className="w-px bg-white/6" />
-                    <div className="flex w-full gap-6 py-8">
+                    <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 py-8">
                         <BottomMetricSkeleton />
-                        <div className="w-px bg-white/6" />
+                        <div className="w-px bg-white/6 hidden md:block" />
                         <BottomMetricSkeleton />
-                        <div className="w-px bg-white/6" />
+                        <div className="w-px bg-white/6 hidden md:block" />
                         <BottomMetricSkeleton />
                     </div>
                 </div>
@@ -167,7 +167,7 @@ function BottomMetric({
     barWidth,
 }: BottomMetricProps) {
     return (
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 text-white/40 text-xs mb-3">
                 {icon}
                 <span>{label}</span>
@@ -312,8 +312,8 @@ export default function SuppliersPage() {
                                 </PopoverContent>
                             </Popover>
                         </div>
-                        <div className="grid grid-cols-3 max-w-full gap-5">
-                            <div className="grid md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-full gap-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:col-span-2 lg:col-span-1">
                                 {/* Left stat cards */}
                                 <div className="flex flex-col gap-3">
                                     {isLoading ? (
@@ -377,7 +377,7 @@ export default function SuppliersPage() {
                             {isLoading ? (
                                 <EarningInsightsSkeleton />
                             ) : (
-                                <div className="bg-[#0a0a0a] col-span-2 max-w-full rounded-2xl p-5 border border-white/6 flex flex-col gap-5">
+                                <div className="bg-[#0a0a0a] col-span-1 md:col-span-2 lg:col-span-2 max-w-full rounded-2xl p-5 border border-white/6 flex flex-col gap-5">
                                     {/* Header */}
                                     <div className="flex items-start justify-between">
                                         <div>
@@ -391,12 +391,12 @@ export default function SuppliersPage() {
                                     </div>
 
                                     {/* Weekly amount + bar chart row */}
-                                    <div className="flex items-end gap-8 justify-between">
+                                    <div className="flex flex-col lg:flex-row items-end gap-8 justify-between">
                                         {/* Amount */}
-                                        <div className="w-lg">
+                                        <div className="w-full lg:w-lg">
                                             <div className="flex justify-center gap-2 flex-col pb-5">
                                                 <div className="flex items-baseline gap-2">
-                                                    <span className="text-7xl font-bold text-white tracking-tight">
+                                                    <span className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">
                                                         {dashboardStats.weeklyEarnings?.value || "$0"}
                                                     </span>
                                                     <span className={`text-xs font-medium ${dashboardStats.weeklyEarnings?.trend === "up" ? "text-emerald-400 bg-emerald-400/10" : "text-red-400 bg-red-400/10"} px-2 py-0.5 rounded-full`}>
@@ -413,7 +413,7 @@ export default function SuppliersPage() {
                                                 orientation="horizontal"
                                                 className="w-px bg-white/6"
                                             />
-                                            <div className="flex w-full gap-6 py-8">
+                                            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 py-8">
                                                 <BottomMetric
                                                     icon={<Mail size={12} />}
                                                     label="Earning"
@@ -421,7 +421,7 @@ export default function SuppliersPage() {
                                                     barWidth={`${dashboardStats.weeklyEarnings?.earningPercentage || 0}%`}
                                                     barColor="bg-white/60"
                                                 />
-                                                <div className="w-px bg-white/6" />
+                                                <div className="w-px bg-white/6 hidden md:block" />
                                                 <BottomMetric
                                                     icon={<DollarSign size={12} />}
                                                     label="Profit"
@@ -429,7 +429,7 @@ export default function SuppliersPage() {
                                                     barWidth={`${dashboardStats.weeklyEarnings?.profitPercentage || 0}%`}
                                                     barColor="bg-white/60"
                                                 />
-                                                <div className="w-px bg-white/6" />
+                                                <div className="w-px bg-white/6 hidden md:block" />
                                                 <BottomMetric
                                                     icon={<ShoppingCart size={12} />}
                                                     label="Expense"
@@ -439,23 +439,25 @@ export default function SuppliersPage() {
                                                 />
                                             </div>
                                         </div>
-                                        <ChartBarActive
-                                            data={dashboardStats.weeklyChartData.length > 0 ? dashboardStats.weeklyChartData : undefined}
-                                            activeIndex={dashboardStats.weeklyChartData.length > 0 ? dashboardStats.weeklyChartData.length - 1 : 0}
-                                        />
+                                        <div className="w-fit lg:w-auto">
+                                            <ChartBarActive
+                                                data={dashboardStats.weeklyChartData.length > 0 ? dashboardStats.weeklyChartData : undefined}
+                                                activeIndex={dashboardStats.weeklyChartData.length > 0 ? dashboardStats.weeklyChartData.length - 1 : 0}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
-                    <div className="grid max-w-full grid-cols-1 gap-5 p-4 sm:gap-6 sm:p-6 md:grid-cols-3">
-                        <div className="md:col-span-1">
+                    <div className="grid max-w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-4 sm:gap-6 sm:p-6">
+                        <div className="md:col-span-1 lg:col-span-1">
                             <OrdersOverviewCard />
                         </div>
-                        <div className="md:col-span-1">
+                        <div className="md:col-span-1 lg:col-span-1">
                             <LatestOrdersCard />
                         </div>
-                        <div className="md:col-span-1">
+                        <div className="md:col-span-2 lg:col-span-1">
                             <PopularProductCard dateRange={dateRange} />
                         </div>
                     </div>
@@ -485,7 +487,7 @@ function OrdersOverviewCard() {
     const [activeTab, setActiveTab] = useState<TabKey>("packed");
 
     return (
-        <section className="flex h-full flex-col rounded-2xl border border-white/10 bg-neutral-950 p-6">
+        <section className="flex h-full flex-col rounded-2xl border border-white/10 bg-neutral-950 p-4 md:p-6">
             <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 overflow-hidden rounded-full bg-neutral-800">
@@ -576,7 +578,7 @@ function LatestOrdersCard() {
     };
 
     return (
-        <section className="flex h-full flex-col rounded-2xl border border-white/10 bg-neutral-950 p-6">
+        <section className="flex h-full flex-col rounded-2xl border border-white/10 bg-neutral-950 p-4 md:p-6">
             <div className="flex items-start justify-between">
                 <div>
                     <h2 className="text-[17px] font-semibold text-white">Latest Orders</h2>
@@ -602,17 +604,17 @@ function LatestOrdersCard() {
                                 key={order.id || order.orderId || `order-${index}`}
                                 className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
                             >
-                                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
                                     <Package size={18} className="text-white/60" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-1">
+                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                                         <span className="text-sm font-medium text-white truncate">
                                             {order.type === 'burnbox' ? order.recipeName : order.productName}
                                         </span>
                                         {getOrderTypeBadge(order.type)}
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-white/50">
+                                    <div className="flex items-center gap-2 text-xs text-white/50 flex-wrap">
                                         <span>Qty: {order.quantity}</span>
                                         <span>•</span>
                                         <span>{formatPrice(order.totalPrice)}</span>
@@ -717,7 +719,7 @@ function PopularProductCard({ dateRange }: { dateRange?: DateRange }) {
     }, [dateRange]);
 
     return (
-        <section className="flex h-full flex-col rounded-2xl border border-white/10 bg-neutral-950 p-6">
+        <section className="flex h-full flex-col rounded-2xl border border-white/10 bg-neutral-950 p-4 md:p-6">
             <div className="flex items-start justify-between">
                 <div>
                     <h2 className="text-[17px] font-semibold text-white">

@@ -118,7 +118,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
-  
+
   // Use real user data from session, or fallback to empty object if not authenticated
   const user = session?.user ? {
     name: session.user.name || "User",

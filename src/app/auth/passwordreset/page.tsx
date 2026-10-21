@@ -291,7 +291,7 @@ export default function Page() {
       <LeftPanel />
 
       {/* RIGHT */}
-      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen dark:bg-[#F7F8F2] px-6 py-14 overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen dark:bg-[#F7F8F2] px-4 sm:px-6 py-10 sm:py-14 overflow-hidden">
 
         {/* Soft radial glow */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
@@ -422,13 +422,13 @@ export default function Page() {
                         onChange={setOtp}
                         containerClassName="w-full justify-between"
                       >
-                        <InputOTPGroup className="gap-2 *:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-[15%] *:data-[slot=input-otp-slot]:text-xl">
+                        <InputOTPGroup className="gap-1 sm:gap-2 *:data-[slot=input-otp-slot]:h-10 sm:*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-[15%] sm:*:data-[slot=input-otp-slot]:w-[15%] *:data-[slot=input-otp-slot]:text-lg sm:*:data-[slot=input-otp-slot]:text-xl">
                           <InputOTPSlot index={0} aria-invalid={otpInvalid} data-valid={otpValid} />
                           <InputOTPSlot index={1} aria-invalid={otpInvalid} data-valid={otpValid} />
                           <InputOTPSlot index={2} aria-invalid={otpInvalid} data-valid={otpValid} />
                         </InputOTPGroup>
                         <InputOTPSeparator />
-                        <InputOTPGroup className="gap-2 *:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-[15%] *:data-[slot=input-otp-slot]:text-xl">
+                        <InputOTPGroup className="gap-1 sm:gap-2 *:data-[slot=input-otp-slot]:h-10 sm:*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-[15%] sm:*:data-[slot=input-otp-slot]:w-[15%] *:data-[slot=input-otp-slot]:text-lg sm:*:data-[slot=input-otp-slot]:text-xl">
                           <InputOTPSlot index={3} aria-invalid={otpInvalid} data-valid={otpValid} />
                           <InputOTPSlot index={4} aria-invalid={otpInvalid} data-valid={otpValid} />
                           <InputOTPSlot index={5} aria-invalid={otpInvalid} data-valid={otpValid} />

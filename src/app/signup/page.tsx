@@ -153,7 +153,7 @@ export default function Page() {
       <LeftPanel />
 
       {/* RIGHT */}
-      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen bg-black px-6 py-14 overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen bg-black px-4 sm:px-6 py-10 sm:py-14 overflow-hidden">
 
         {/* Soft radial glow */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
@@ -179,18 +179,18 @@ export default function Page() {
             <>
               {/* Heading */}
               <h1
-                className="text-[1.75rem] font-bold text-center text-white leading-tight mb-2"
+                className="text-[1.5rem] sm:text-[1.75rem] font-bold text-center text-white leading-tight mb-2"
                 style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}
               >
                 Request <em className="text-[#9DBD61]">access</em>
               </h1>
 
-              <p className="text-sm text-center text-[#A9AAA0] mb-8">
+              <p className="text-sm text-center text-[#A9AAA0] mb-6 sm:mb-8">
                 Fill in your details to request access to the Burn Box Operations Hub.
               </p>
 
               {/* Card */}
-              <div className="w-full rounded-2xl border border-[#3a3a3a] bg-[#1a1a1a]/80 backdrop-blur-sm p-8 shadow-xl shadow-[#31412B]/10">
+              <div className="w-full rounded-2xl border border-[#3a3a3a] bg-[#1a1a1a]/80 backdrop-blur-sm p-6 sm:p-8 shadow-xl shadow-[#31412B]/10">
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                   {error && (
                     <Item variant="outline" className="border-rose-500/50 bg-rose-950/20">
@@ -324,7 +324,7 @@ export default function Page() {
           ) : (
             <>
               {/* Success State */}
-              <div className="w-full rounded-2xl border border-[#3a3a3a] bg-[#1a1a1a]/80 backdrop-blur-sm p-8 shadow-xl shadow-[#31412B]/10 dark:border-[#D8DDD1] dark:bg-white/80 text-center">
+              <div className="w-full rounded-2xl border border-[#3a3a3a] bg-[#1a1a1a]/80 backdrop-blur-sm p-6 sm:p-8 shadow-xl shadow-[#31412B]/10 dark:border-[#D8DDD1] dark:bg-white/80 text-center">
                 <div className="flex justify-center mb-4">
                   <div className="w-16 h-16 rounded-full bg-[#9DBD61]/20 dark:bg-[#668E2B]/20 flex items-center justify-center">
                     <HugeiconsIcon icon={CircleCheckIcon} className="size-8 text-[#9DBD61] dark:text-[#668E2B]" />
