@@ -219,7 +219,7 @@ export function CreateProductSheet({ onProductCreated }: CreateProductSheetProps
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>
-        <Button className="gap-1.5 bg-[#668e2b] text-white hover:bg-[#668e2b]/90">
+        <Button className="flex-1 sm:flex-none gap-1.5 bg-[#668e2b] text-white hover:bg-[#668e2b]/90">
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Add product</span>
           <span className="sm:hidden">Add</span>

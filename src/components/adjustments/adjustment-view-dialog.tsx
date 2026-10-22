@@ -26,7 +26,7 @@ export function AdjustmentViewDialog({ open, onOpenChange, adjustment }: Adjustm
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-full sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Adjustment Details</DialogTitle>
           <DialogDescription>
@@ -49,7 +49,7 @@ export function AdjustmentViewDialog({ open, onOpenChange, adjustment }: Adjustm
           <Separator />
 
           {/* Stock Details */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Package className="h-4 w-4" />

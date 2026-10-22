@@ -169,7 +169,7 @@ export function AdjustmentDialog({ open, onOpenChange, onSubmit, isLoading, avai
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-full sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Record Ingredient Adjustment</DialogTitle>
           <DialogDescription>
@@ -216,7 +216,7 @@ export function AdjustmentDialog({ open, onOpenChange, onSubmit, isLoading, avai
             {errors.adjustmentType && <p className="text-sm text-red-500">{errors.adjustmentType}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="previousStock">Previous Stock</Label>
               <Input

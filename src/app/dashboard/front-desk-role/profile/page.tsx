@@ -1,8 +1,7 @@
 "use client";
 
-import FDRProfileDropdown from '@/components/front-desk-role/fdr-profile-dropdown';
 import FdrSidebar from '@/components/front-desk-role/fdr-sidebar';
-import { FDRThemeToggle } from '@/components/front-desk-role/fdr-theme-toggle';
+import { FdrDashboardHeader } from '@/components/front-desk-role/fdr-dashboard-header';
 import {
   Dialog,
   DialogContent,
@@ -262,8 +261,9 @@ const ProfileSettings = () => {
       {/* ── Main area ───────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden shrink-0">
         {/* Top bar */}
-        <header className="h-20 shrink-0 flex items-center justify-between px-6 gap-4 border-b border-neutral-200 dark:border-[#1a1a1a] bg-white dark:bg-black">
-          <div className="flex items-center gap-4">
+        <FdrDashboardHeader
+          placeholder="Search..."
+          leftContent={
             <button
               onClick={() => router.back()}
               className="flex items-center gap-2 text-neutral-400 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
@@ -271,13 +271,8 @@ const ProfileSettings = () => {
               <ArrowLeft size={16} />
               <span className="text-sm">Back</span>
             </button>
-            <GooeyInput placeholder="Search..." />
-          </div>
-          <div className="flex items-center gap-3">
-            <FDRThemeToggle />
-            <FDRProfileDropdown />
-          </div>
-        </header>
+          }
+        />
 
         {/* Scrollable content */}
         <main className="flex-1 overflow-y-auto p-6">

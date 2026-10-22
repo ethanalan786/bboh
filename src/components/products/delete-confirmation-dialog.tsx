@@ -88,7 +88,7 @@ export function DeleteConfirmationDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md font-archivo">
+      <DialogContent className="max-w-full sm:max-w-md font-archivo">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${error ? "bg-amber-500/10" : "bg-red-500/10"}`}>

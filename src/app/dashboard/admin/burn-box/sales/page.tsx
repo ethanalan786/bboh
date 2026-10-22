@@ -399,6 +399,7 @@ export default function BurnBoxSalesPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
+                <div className="flex items-center gap-2">
                 <Popover open={showFilters} onOpenChange={setShowFilters}>
                   <PopoverTrigger>
                     <Button variant="outline" size="icon" className={hasActiveFilters ? "bg-accent" : ""}>
@@ -477,10 +478,11 @@ export default function BurnBoxSalesPage() {
                 <Button variant="outline" size="icon" onClick={exportToCSV}>
                   <Download className="h-4 w-4" />
                 </Button>
-                <Button onClick={handleRecordSale}>
+                <Button onClick={handleRecordSale} className="flex-1 sm:flex-none">
                   <Plus className="h-4 w-4 mr-2" />
                   Record Sale
                 </Button>
+                </div>
               </div>
             </div>
 

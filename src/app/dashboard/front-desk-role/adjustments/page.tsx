@@ -1,8 +1,7 @@
 "use client";
 
 import FdrSidebar from '@/components/front-desk-role/fdr-sidebar';
-import FDRProfileDropdown from '@/components/front-desk-role/fdr-profile-dropdown';
-import { FDRThemeToggle } from '@/components/front-desk-role/fdr-theme-toggle';
+import { FdrDashboardHeader } from '@/components/front-desk-role/fdr-dashboard-header';
 import {
   Empty,
   EmptyContent,
@@ -325,17 +324,11 @@ const Adjustments = () => {
       <FdrSidebar />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 shrink-0 flex items-center justify-between px-6 gap-4 border-b border-neutral-200 dark:border-[#1a1a1a] bg-white dark:bg-black">
-          <GooeyInput 
-            placeholder="Search sales to adjust..." 
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-          />
-          <div className="flex items-center gap-3">
-            <FDRThemeToggle />
-            <FDRProfileDropdown />
-          </div>
-        </header>
+        <FdrDashboardHeader
+          placeholder="Search sales to adjust..."
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-start justify-between mb-6">

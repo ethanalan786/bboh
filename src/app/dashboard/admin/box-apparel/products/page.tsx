@@ -590,6 +590,7 @@ export default function ProductsPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
+                <div className="flex items-center gap-2">
                 <Popover open={showFilters} onOpenChange={setShowFilters}>
                   <PopoverTrigger>
                     <Button variant="outline" size="icon" className={hasActiveFilters ? "bg-accent" : ""}>
@@ -677,6 +678,8 @@ export default function ProductsPage() {
                   <Download className="h-4 w-4" />
                 </Button>
                 <CreateProductSheet onProductCreated={handleProductCreated} />
+                </div>
+
               </div>
             </div>
 

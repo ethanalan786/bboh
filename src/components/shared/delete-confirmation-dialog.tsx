@@ -53,7 +53,7 @@ export function DeleteConfirmationDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent className="max-w-full sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Delete {itemType}</DialogTitle>
           <DialogDescription>

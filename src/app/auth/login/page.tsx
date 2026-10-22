@@ -39,7 +39,7 @@ function LeftPanel() {
   const logoSrc = !mounted ? '/hlogo-dark.svg' : (currentTheme === 'dark' ? '/hlogo-dark.svg' : '/hlogo-light.svg')
 
   return (
-    <div className="relative hidden lg:flex flex-col items-center text-center justify-between w-1/2 min-h-screen bg-[#F2F1EC] dark:bg-black overflow-hidden px-14 py-12 select-none">
+    <div className="relative hidden lg:flex flex-col items-center text-center justify-between w-1/2 min-h-screen dark:bg-black overflow-hidden px-14 py-12 select-none" style={{ backgroundColor: '#F2F1EC' }}>
       {/* Logo */}
       <Link href="/" className="">
         <Image
@@ -53,19 +53,19 @@ function LeftPanel() {
 
       {/* Central copy — minimal, typographic */}
       <div className="relative z-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-black/40 dark:text-white/40 font-medium mb-6">
+        <p className="text-[10px] uppercase tracking-[0.2em] dark:text-white/40 font-medium mb-6" style={{ color: 'rgba(0, 0, 0, 0.4)' }}>
           Operations Hub
         </p>
 
         <h2
-          className="text-[2.5rem] font-semibold leading-[1.12] tracking-[-0.035em] text-black dark:text-white"
-          style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}
+          className="text-[2.5rem] font-semibold leading-[1.12] tracking-[-0.035em] dark:text-white"
+          style={{ fontFamily: 'var(--font-serif, Georgia, serif)', color: 'black' }}
         >
           Every detail,<br />
-          <em className="text-[#668E2B] dark:text-[#7aaa40] italic font-normal">always in order.</em>
+          <em className="dark:text-[#7aaa40] italic font-normal" style={{ color: '#668E2B' }}>always in order.</em>
         </h2>
 
-        <p className="mt-6 text-black/60 dark:text-white/60 text-sm leading-[1.75] max-w-88">
+        <p className="mt-6 dark:text-white/60 text-sm leading-[1.75] max-w-88" style={{ color: 'rgba(0, 0, 0, 0.6)' }}>
           Inventory, recipes, purchasing, and sales — unified across Box Apparel and Burn Box so nothing slips through.
         </p>
 
@@ -77,8 +77,8 @@ function LeftPanel() {
             'GymMaster & QuickBooks always in sync',
           ].map(line => (
             <div key={line} className="flex items-start justify-center gap-3">
-              <span className="mt-[7px] size-1 rounded-full bg-black/60 dark:bg-white/60 shrink-0" />
-              <span className="text-[13px] text-black/60 dark:text-white/60 leading-snug">{line}</span>
+              <span className="mt-1.75 size-1 rounded-full dark:bg-white/60 shrink-0" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }} />
+              <span className="text-[13px] dark:text-white/60 leading-snug" style={{ color: 'rgba(0, 0, 0, 0.6)' }}>{line}</span>
             </div>
           ))}
         </div>
@@ -86,7 +86,7 @@ function LeftPanel() {
 
       {/* Bottom — version tag */}
       <div className="relative z-10">
-        <p className="text-[11px] text-[#4a5e42] dark:text-[#283d22] tracking-wide">
+        <p className="text-[11px] dark:text-[#283d22] tracking-wide" style={{ color: '#4a5e42' }}>
           v1.0 — Built for Burn Box
         </p>
       </div>
@@ -101,6 +101,7 @@ export default function Page() {
   const [error, setError] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [googleError, setGoogleError] = useState('')
   const passwordRef = useRef<HTMLInputElement>(null)
 
 
@@ -155,6 +156,16 @@ export default function Page() {
     }
   }
 
+  const handleGoogleSignIn = async () => {
+    setGoogleError('')
+    const result = await signIn('google', { callbackUrl: '/dashboard', redirect: false })
+    if (result?.error) {
+      setGoogleError('No account found with this email. Please request access first.')
+    } else if (result?.ok) {
+      router.push('/dashboard')
+    }
+  }
+
   return (
     <div className="flex min-h-screen" style={{ fontFamily: 'var(--font-inter)' }}>
 
@@ -162,7 +173,7 @@ export default function Page() {
       <LeftPanel />
 
       {/* RIGHT */}
-      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen bg-black dark:bg-[#F7F8F2] px-4 sm:px-6 py-10 sm:py-14 overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 min-h-screen dark:bg-[#F7F8F2] px-4 sm:px-6 py-10 sm:py-14 overflow-hidden" style={{ backgroundColor: 'black' }}>
 
         {/* Soft radial glow */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
@@ -186,26 +197,26 @@ export default function Page() {
 
           {/* Heading */}
           <h1
-            className="text-[1.5rem] sm:text-[1.75rem] font-bold text-center text-white dark:text-[#182015] leading-tight mb-2"
-            style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}
+            className="text-[1.5rem] sm:text-[1.75rem] font-bold text-center dark:text-[#182015] leading-tight mb-2"
+            style={{ fontFamily: 'var(--font-serif, Georgia, serif)', color: 'white' }}
           >
-            Let&apos;s get back to <em className="text-[#9DBD61] dark:text-[#668E2B]">work</em>
+            Let&apos;s get back to <em className="dark:text-[#668E2B]" style={{ color: '#9DBD61' }}>work</em>
           </h1>
 
-          <p className="text-sm text-center text-[#A9AAA0] dark:text-[#5F675C] mb-6 sm:mb-8">
+          <p className="text-sm text-center dark:text-[#5F675C] mb-6 sm:mb-8" style={{ color: '#A9AAA0' }}>
             Sign in to pick up where you left off.
           </p>
 
           {/* Card */}
-          <div className="w-full rounded-2xl border border-[#3a3a3a] bg-[#1a1a1a]/80 backdrop-blur-sm p-6 sm:p-8 shadow-xl shadow-[#31412B]/10 dark:border-[#D8DDD1] dark:bg-white/80">
+          <div className="w-full rounded-2xl border backdrop-blur-sm p-6 sm:p-8 shadow-xl dark:border-[#D8DDD1] dark:bg-white/80" style={{ borderColor: '#3a3a3a', backgroundColor: 'rgba(26, 26, 26, 0.8)', boxShadow: '0 20px 25px -5px rgba(49, 65, 43, 0.1)' }}>
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               {error && (
-                <Item variant="outline" className="border-rose-500/50 dark:bg-rose-50 bg-rose-950/20">
+                <Item variant="outline" className="border-rose-500/50 dark:bg-rose-50" style={{ backgroundColor: 'rgba(49, 7, 22, 0.2)' }}>
                   <ItemMedia variant="icon">
-                    <HugeiconsIcon icon={AlertCircleIcon} className="size-5 text-rose-600" />
+                    <HugeiconsIcon icon={AlertCircleIcon} className="size-5" style={{ color: '#dc2626' }} />
                   </ItemMedia>
                   <ItemContent>
-                    <ItemDescription className="text-rose-600 dark:text-rose-400">
+                    <ItemDescription className="dark:text-rose-400" style={{ color: '#dc2626' }}>
                       {error}
                     </ItemDescription>
                   </ItemContent>
@@ -214,7 +225,7 @@ export default function Page() {
 
               {/* Email */}
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="text-sm font-medium text-white dark:text-[#182015]">
+                <label htmlFor="email" className="text-sm font-medium dark:text-[#182015]" style={{ color: 'white' }}>
                   Email
                 </label>
                 <Input
@@ -223,26 +234,30 @@ export default function Page() {
                   type="email"
                   required
                   placeholder="Your Work Email"
-                  className={`rounded-md bg-transparent dark:text-black text-white dark:border-neutral-300 border-neutral-800 ${emailError
-                      ? 'bg-rose-50 border-rose-300 dark:bg-[#feedf4] dark:border-[#fabed0] focus:ring-rose-500/20'
+                  className={`rounded-md bg-transparent dark:text-black dark:border-neutral-300 ${emailError
+                      ? 'dark:bg-[#feedf4] dark:border-[#fabed0] focus:ring-rose-500/20'
                       : ''
                     }`}
+                  style={{ color: 'white', borderColor: '#262626' }}
                 />
                 {emailError && (
-                  <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{emailError}</p>
+                  <p className="text-xs dark:text-rose-400 mt-1" style={{ color: '#dc2626' }}>{emailError}</p>
                 )}
               </div>
 
               {/* Password */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-sm font-medium text-white dark:text-[#182015]">
+                  <label htmlFor="password" className="text-sm font-medium dark:text-[#182015]" style={{ color: 'white' }}>
                     Password
                   </label>
                   <Link href="/auth/passwordreset">
                     <button
                       type="button"
-                      className="text-sm text-[#A2A03E] hover:text-[#C5CB68] dark:text-[#526F1F] dark:hover:text-[#668E2B] transition"
+                      className="text-sm dark:text-[#526F1F] dark:hover:text-[#668E2B] transition"
+                      style={{ color: '#A2A03E' }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = '#C5CB68'}
+                      onMouseLeave={(e) => e.currentTarget.style.color = '#A2A03E'}
                     >
                       Forgot Password?
                     </button>
@@ -257,16 +272,20 @@ export default function Page() {
                     type={showPassword ? 'text' : 'password'}
                     required
                     placeholder="••••••••••••"
-                    className={`rounded-md bg-transparent pr-10 dark:text-black text-white border dark:border-neutral-300 border-neutral-800 ${passwordError
-                        ? 'bg-rose-50 border-rose-300 dark:bg-[#feedf4] dark:border-[#fabed0] focus:ring-rose-500/20'
+                    className={`rounded-md bg-transparent pr-10 dark:text-black border dark:border-neutral-300 ${passwordError
+                        ? 'dark:bg-[#feedf4] dark:border-[#fabed0] focus:ring-rose-500/20'
                         : ''
                       }`}
+                    style={{ color: 'white', borderColor: '#262626' }}
                   />
                   <button
                     type="button"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555] hover:text-[#F3F4D4] dark:text-[#7A8275] dark:hover:text-[#293126] transition"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 dark:text-[#7A8275] dark:hover:text-[#293126] transition"
+                    style={{ color: '#555' }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#F3F4D4'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#555'}
                   >
                     {showPassword
                       ? <HugeiconsIcon icon={EyeOffIcon} className="size-5" />
@@ -274,7 +293,7 @@ export default function Page() {
                   </button>
                 </div>
                 {passwordError && (
-                  <p className="text-xs text-rose-600 dark:text-rose-400 mt-1">{passwordError}</p>
+                  <p className="text-xs dark:text-rose-400 mt-1" style={{ color: '#dc2626' }}>{passwordError}</p>
                 )}
               </div>
 
@@ -282,7 +301,10 @@ export default function Page() {
               <button
                 type="submit"
                 disabled={submitted}
-                className="mt-1 h-11 w-full rounded-xl bg-[#9DBD61] text-sm font-semibold text-[#0a0f07] transition hover:bg-[#b5d475] disabled:opacity-80 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#668E2B] dark:bg-[#182015] dark:text-white dark:hover:bg-[#293126] flex items-center justify-center gap-2"
+                className="mt-1 h-11 w-full rounded-xl text-sm font-semibold transition disabled:opacity-80 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 dark:bg-[#182015] dark:text-white dark:hover:bg-[#293126] flex items-center justify-center gap-2"
+                style={{ backgroundColor: '#9DBD61', color: '#0a0f07' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#b5d475'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9DBD61'}
               >
                 {submitted ? (
                   <>
@@ -299,21 +321,36 @@ export default function Page() {
             {/* Google */}
             <button
               type="button"
-              onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+              onClick={handleGoogleSignIn}
               aria-label="Continue with Google"
-              className="mt-4 flex h-14 w-full items-center gap-3 rounded-xl border border-[#3a3a3a] dark:border-[#D8DDD1] bg-[#1a1a1a] dark:bg-[#F7F8F2] px-4 transition hover:border-[#668E2B]/30 hover:bg-[#2a2a2a] dark:hover:border-[#668E2B]/50 dark:hover:bg-[#EEF2E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A2A03E]"
+              className="mt-4 flex h-14 w-full items-center gap-3 rounded-xl border px-4 transition dark:border-[#D8DDD1] dark:bg-[#F7F8F2] dark:hover:border-[#668E2B]/50 dark:hover:bg-[#EEF2E8] focus-visible:outline-none focus-visible:ring-2"
+              style={{ borderColor: '#3a3a3a', backgroundColor: '#1a1a1a' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(102, 142, 43, 0.3)'
+                e.currentTarget.style.backgroundColor = '#2a2a2a'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#3a3a3a'
+                e.currentTarget.style.backgroundColor = '#1a1a1a'
+              }}
             >
               <GoogleIcon />
-              <span className="text-sm font-semibold text-white dark:text-[#182015]">Continue with Google</span>
+              <span className="text-sm font-semibold dark:text-[#182015]" style={{ color: 'white' }}>Continue with Google</span>
             </button>
+            {googleError && (
+              <p className="text-xs dark:text-rose-400 mt-2 text-center" style={{ color: '#dc2626' }}>{googleError}</p>
+            )}
           </div>
 
           {/* Sign up */}
-          <p className="mt-6 text-sm text-[#888] dark:text-[#5F675C] text-center">
+          <p className="mt-6 text-sm dark:text-[#5F675C] text-center" style={{ color: '#888' }}>
             Don&apos;t have an account?{' '}
             <a
               href="/signup"
-              className="text-[#9DBD61] hover:text-[#b5d475] dark:text-[#526F1F] dark:hover:text-[#668E2B] font-medium transition"
+              className="dark:text-[#526F1F] dark:hover:text-[#668E2B] font-medium transition"
+              style={{ color: '#9DBD61' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#b5d475'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#9DBD61'}
             >
               Request access
             </a>

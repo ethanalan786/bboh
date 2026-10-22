@@ -656,7 +656,7 @@ export default function SalesProfitabilityReportsPage() {
                     <div className="flex flex-1 flex-col gap-6 px-4 sm:px-6 py-6">
 
                         {/* Page Header + Filters in one row */}
-                        <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <h1 className="text-2xl font-bold text-white mb-1">
                                     Reports
@@ -666,11 +666,11 @@ export default function SalesProfitabilityReportsPage() {
                                 </p>
                             </div>
                             {/* Filter Controls */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 w-full sm:w-auto">
                                 <DateRangePicker
                                     value={dateRange}
                                     onChange={setDateRange}
-                                    className="w-full"
+                                    className="w-full sm:w-auto"
                                 />
                             </div>
                         </div>
@@ -683,7 +683,7 @@ export default function SalesProfitabilityReportsPage() {
                                     Your Bookmarked Reports
                                 </h2>
 
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {bookmarks.map((bookmark) => {
                                         const allReports = [...salesReports, ...inventoryReports, ...purchasingReports, ...automatedReports];
                                         const report = allReports.find(r => r.route === bookmark.reportId);
@@ -707,7 +707,7 @@ export default function SalesProfitabilityReportsPage() {
                             <h2 className="text-lg font-semibold text-blue-300 mb-4">Sales & Profitability</h2>
 
                             {/* Key Metrics */}
-                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 {loading ? (
                                     Array.from({ length: 4 }).map((_, i) => (
                                         <div key={i} className="bg-[#0a0a0a] rounded-xl p-5 border border-white/6 animate-pulse">
@@ -746,7 +746,7 @@ export default function SalesProfitabilityReportsPage() {
                             <h2 className="text-lg font-semibold text-emerald-400 mb-4">Inventory Reports</h2>
 
                             {/* Key Metrics */}
-                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 {loading ? (
                                     Array.from({ length: 4 }).map((_, i) => (
                                         <div key={i} className="bg-[#0a0a0a] rounded-xl p-5 border border-white/6 animate-pulse">
@@ -785,7 +785,7 @@ export default function SalesProfitabilityReportsPage() {
                             <h2 className="text-lg font-semibold text-purple-400 mb-4">Purchasing Reports</h2>
 
                             {/* Key Metrics */}
-                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 {loading ? (
                                     Array.from({ length: 4 }).map((_, i) => (
                                         <div key={i} className="bg-[#0a0a0a] rounded-xl p-5 border border-white/6 animate-pulse">

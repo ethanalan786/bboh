@@ -222,7 +222,7 @@ export default function InventoryMovementReport() {
                                     Full history of every inventory change — purchases received, sales deductions, adjustments, and wastage — per product/ingredient over a date range
                                 </p>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                                 <Popover>
                                     <PopoverTrigger>
                                         <Button

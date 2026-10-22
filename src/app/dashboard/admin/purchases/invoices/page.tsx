@@ -380,6 +380,7 @@ export default function InvoicesPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
+                <div className="flex items-center gap-2">
                 <DropdownMenu open={showFilters} onOpenChange={setShowFilters}>
                   <DropdownMenuTrigger>
                     <Button variant="outline" size="icon" className={hasActiveFilters ? "bg-accent" : ""}>
@@ -451,10 +452,12 @@ export default function InvoicesPage() {
                 >
                   <Download className="h-4 w-4" />
                 </Button>
-                <Button onClick={() => router.push('/dashboard/admin/purchases/invoices/create')}>
+                <Button className="flex-1 sm:flex-none" onClick={() => router.push('/dashboard/admin/purchases/invoices/create')}>
                   <Plus className="h-4 w-4 mr-2" />
                   New Purchase Order
                 </Button>
+                </div>
+
               </div>
             </div>
 

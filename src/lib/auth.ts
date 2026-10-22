@@ -74,32 +74,22 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!existingUser) {
-          // Create new user from Google data
-          const newUser = await prisma.user.create({
+          // User does not exist - deny sign in (no signup allowed)
+          return false
+        }
+
+        // Update existing user with Google info if needed
+        if (!existingUser.googleId) {
+          await prisma.user.update({
+            where: { id: existingUser.id },
             data: {
-              email: user.email!,
-              name: user.name,
-              image: user.image,
               googleId: account.providerAccountId,
-              role: 'FRONT_DESK', // Default role for new Google users
+              image: user.image || existingUser.image,
             }
           })
-          user.id = newUser.id
-          user.role = newUser.role
-        } else {
-          // Update existing user with Google info if needed
-          if (!existingUser.googleId) {
-            await prisma.user.update({
-              where: { id: existingUser.id },
-              data: {
-                googleId: account.providerAccountId,
-                image: user.image || existingUser.image,
-              }
-            })
-          }
-          user.id = existingUser.id
-          user.role = existingUser.role
         }
+        user.id = existingUser.id
+        user.role = existingUser.role
       }
       return true
     },

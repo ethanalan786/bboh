@@ -260,7 +260,7 @@ export function RecipeDialog({ open, onOpenChange, onSubmit, editData, isLoading
           </SheetHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6 flex-1 overflow-y-auto px-6 pb-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Recipe Name *</Label>
               <Input
@@ -288,7 +288,7 @@ export function RecipeDialog({ open, onOpenChange, onSubmit, editData, isLoading
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
               <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
@@ -449,7 +449,7 @@ export function RecipeDialog({ open, onOpenChange, onSubmit, editData, isLoading
 
           <div className="border-t pt-4">
             <h3 className="font-semibold mb-3">Cost Analysis</h3>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="p-3 border rounded-lg">
                 <p className="text-xs text-muted-foreground">Total Cost</p>
                 <p className="text-lg font-bold">${totalCost.toFixed(2)}</p>
@@ -473,7 +473,7 @@ export function RecipeDialog({ open, onOpenChange, onSubmit, editData, isLoading
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="preparationTime">Prep Time (min)</Label>
               <Input

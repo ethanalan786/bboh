@@ -367,10 +367,6 @@ export default function IngredientsPage() {
     return "In Stock"
   }
 
-  const convertToBaseUnit = (quantity: number, fromUnit: UnitOfMeasurement): number => {
-    return quantity * (UNIT_CONVERSIONS[fromUnit] || 1)
-  }
-
   const hasActiveFilters = searchQuery || categoryFilter !== "all" || unitFilter !== "all" || statusFilter !== "all"
 
   return (
@@ -407,123 +403,126 @@ export default function IngredientsPage() {
               <div>
                 <h1 className="text-xl font-semibold tracking-tight">Ingredients</h1>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  Manage ingredient inventory, bulk tracking, and unit conversions
+                  Manage ingredient inventory and bulk tracking
                 </p>
               </div>
 
-              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="relative w-full sm:w-64">
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    placeholder="Search ingredients..." 
+                  <Input
+                    placeholder="Search ingredients..."
                     className="pl-9"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Popover open={showFilters} onOpenChange={setShowFilters}>
-                  <PopoverTrigger>
-                    <Button variant="outline" size="icon" className={hasActiveFilters ? "bg-accent" : ""}>
-                      <Filter className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 p-4" align="end">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-sm">Filters</h3>
-                        {hasActiveFilters && (
-                          <Button variant="ghost" size="sm" onClick={clearFilters}>
-                            <X className="h-3 w-3 mr-1" />
-                            Clear
-                          </Button>
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium">Category</label>
-                        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All categories</SelectItem>
-                            {categories.map(category => (
-                              <SelectItem key={category} value={category}>{category}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                <div className="flex items-center gap-2">
+                  <Popover open={showFilters} onOpenChange={setShowFilters}>
+                    <PopoverTrigger>
+                      <Button variant="outline" size="icon" className={hasActiveFilters ? "bg-accent" : ""}>
+                        <Filter className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-4" align="end">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-sm">Filters</h3>
+                          {hasActiveFilters && (
+                            <Button variant="ghost" size="sm" onClick={clearFilters}>
+                              <X className="h-3 w-3 mr-1" />
+                              Clear
+                            </Button>
+                          )}
+                        </div>
 
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium">Unit of Measurement</label>
-                        <Select value={unitFilter} onValueChange={(value) => setUnitFilter(value as UnitOfMeasurement | "all")}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All units</SelectItem>
-                            {Object.entries(UNIT_LABELS).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>{label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium">Stock Status</label>
-                        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StockStatus | "all")}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All statuses</SelectItem>
-                            <SelectItem value="In Stock">In Stock</SelectItem>
-                            <SelectItem value="Low Stock">Low Stock</SelectItem>
-                            <SelectItem value="Out of Stock">Out of Stock</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-xs font-medium">Sort by</label>
-                        <div className="flex gap-2">
-                          <Select value={sortBy} onValueChange={setSortBy}>
-                            <SelectTrigger className="flex-1">
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium">Category</label>
+                          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                            <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="name">Name</SelectItem>
-                              <SelectItem value="sku">SKU</SelectItem>
-                              <SelectItem value="stock">Stock Level</SelectItem>
-                              <SelectItem value="cost">Cost per Unit</SelectItem>
-                              <SelectItem value="value">Total Value</SelectItem>
+                              <SelectItem value="all">All categories</SelectItem>
+                              {categories.map(category => (
+                                <SelectItem key={category} value={category}>{category}</SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                          >
-                            <ArrowUpDown className="h-4 w-4" />
-                          </Button>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium">Unit of Measurement</label>
+                          <Select value={unitFilter} onValueChange={(value) => setUnitFilter(value as UnitOfMeasurement | "all")}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All units</SelectItem>
+                              {Object.entries(UNIT_LABELS).map(([value, label]) => (
+                                <SelectItem key={value} value={value}>{label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium">Stock Status</label>
+                          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StockStatus | "all")}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All statuses</SelectItem>
+                              <SelectItem value="In Stock">In Stock</SelectItem>
+                              <SelectItem value="Low Stock">Low Stock</SelectItem>
+                              <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-medium">Sort by</label>
+                          <div className="flex gap-2">
+                            <Select value={sortBy} onValueChange={setSortBy}>
+                              <SelectTrigger className="flex-1">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="name">Name</SelectItem>
+                                <SelectItem value="sku">SKU</SelectItem>
+                                <SelectItem value="stock">Stock Level</SelectItem>
+                                <SelectItem value="cost">Cost per Unit</SelectItem>
+                                <SelectItem value="value">Total Value</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                            >
+                              <ArrowUpDown className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={fetchIngredients}
-                  disabled={loading}
-                >
-                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                </Button>
-                <Button onClick={handleAddIngredient}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Ingredient
-                </Button>
-              </div>
+                    </PopoverContent>
+                  </Popover>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={fetchIngredients}
+                    disabled={loading}
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  </Button>
+                  <Button onClick={handleAddIngredient} className="flex-1 sm:flex-none">
+                    <Plus className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">Add Ingredient</span>
+                    <span className="sm:hidden">Add</span>
+                  </Button>
+                </div>
+              </div> 
             </div>
 
             {/* Stats cards */}

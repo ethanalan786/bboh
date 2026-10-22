@@ -1,8 +1,7 @@
 "use client";
 
 import FdrSidebar from '@/components/front-desk-role/fdr-sidebar';
-import FDRProfileDropdown from '@/components/front-desk-role/fdr-profile-dropdown';
-import { FDRThemeToggle } from '@/components/front-desk-role/fdr-theme-toggle';
+import { FdrDashboardHeader } from '@/components/front-desk-role/fdr-dashboard-header';
 import {
   Empty,
   EmptyContent,
@@ -78,6 +77,41 @@ const RecentSales = () => {
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, []);
+
+  const handleServerSearch = async (query: string) => {
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=sales,products,recipes&limit=10`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.items.map((item: any) => ({
+          id: item.id,
+          label: item.name,
+          data: item
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error('Search error:', error);
+      return [];
+    }
+  };
+
+  const handleResultSelect = (result: any) => {
+    if (result.data.type === 'sale') {
+      router.push(`/dashboard/front-desk-role/sales`);
+    } else if (result.data.type === 'product') {
+      router.push(`/dashboard/front-desk-role/record-sale`);
+    } else if (result.data.type === 'recipe') {
+      router.push(`/dashboard/front-desk-role/record-sale`);
+    }
+  };
+
+  const renderResult = (result: any) => (
+    <div className="flex flex-col">
+      <span className="font-medium">{result.label}</span>
+      <span className="text-xs text-muted-foreground">{result.data.description}</span>
+    </div>
+  );
 
   useEffect(() => {
     async function fetchSales() {
@@ -334,50 +368,12 @@ const RecentSales = () => {
       <FdrSidebar />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 shrink-0 flex items-center justify-between px-6 gap-4 border-b border-neutral-200 dark:border-neutral-800 dark:border-[#1a1a1a] bg-white dark:bg-black">
-          <GooeyInput 
-            placeholder="Search sales, products, or dates..." 
-            onServerSearch={async (query) => {
-              try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=sales,products,recipes&limit=10`);
-                if (response.ok) {
-                  const data = await response.json();
-                  return data.items.map((item: any) => ({
-                    id: item.id,
-                    label: item.name,
-                    data: item
-                  }));
-                }
-                return [];
-              } catch (error) {
-                console.error('Search error:', error);
-                return [];
-              }
-            }}
-            searchDebounce={300}
-            minSearchLength={2}
-            onResultSelect={(result) => {
-              // Handle result selection - navigate to relevant page
-              if (result.data.type === 'sale') {
-                router.push(`/dashboard/front-desk-role/sales`);
-              } else if (result.data.type === 'product') {
-                router.push(`/dashboard/front-desk-role/record-sale`);
-              } else if (result.data.type === 'recipe') {
-                router.push(`/dashboard/front-desk-role/record-sale`);
-              }
-            }}
-            renderResult={(result) => (
-              <div className="flex flex-col">
-                <span className="font-medium">{result.label}</span>
-                <span className="text-xs text-muted-foreground">{result.data.description}</span>
-              </div>
-            )}
-          />
-          <div className="flex items-center gap-3">
-            <FDRThemeToggle />
-            <FDRProfileDropdown />
-          </div>
-        </header>
+        <FdrDashboardHeader
+          placeholder="Search sales, products, or dates..."
+          onServerSearch={handleServerSearch}
+          onResultSelect={handleResultSelect}
+          renderResult={renderResult}
+        />
 
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-start justify-between mb-6">

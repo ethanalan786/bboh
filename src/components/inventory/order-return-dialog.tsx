@@ -259,7 +259,7 @@ export function OrderReturnDialog({ open, onOpenChange, onReturnProcessed, toast
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-2xl font-archivo max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-full sm:max-w-2xl font-archivo max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-500/10 rounded-lg">
@@ -311,7 +311,7 @@ export function OrderReturnDialog({ open, onOpenChange, onReturnProcessed, toast
                     <ShoppingCart className="h-4 w-4 text-orange-500" />
                     <p className="text-sm font-medium text-orange-500">Order Details</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                     <div>
                       <p className="text-muted-foreground">Order ID</p>
                       <p className="font-mono text-xs font-medium">{orderData.orderId}</p>

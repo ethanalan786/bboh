@@ -380,6 +380,7 @@ export default function SuppliersPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
+                <div className="flex items-center gap-2">
                 <DropdownMenu open={showFilters} onOpenChange={setShowFilters}>
                   <DropdownMenuTrigger>
                     <Button variant="outline" size="icon" className={hasActiveFilters ? "bg-accent" : ""}>
@@ -448,12 +449,14 @@ export default function SuppliersPage() {
                 >
                   <Download className="h-4 w-4" />
                 </Button>
-                <Button 
+                <Button  className="flex-1 sm:flex-none"
                   onClick={() => setIsCreateDialogOpen(true)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Supplier
                 </Button>
+                </div>
+
               </div>
             </div>
 

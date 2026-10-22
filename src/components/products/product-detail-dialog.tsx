@@ -102,7 +102,7 @@ export function ProductDetailDialog({ product }: ProductDetailDialogProps) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background font-archivo! p-0">
+      <DialogContent className="max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-background font-archivo! p-0">
         <DialogHeader className="p-6 pb-5 border-b">
           <DialogTitle className="text-lg font-semibold">{product.name}</DialogTitle>
           <DialogDescription className="text-sm">

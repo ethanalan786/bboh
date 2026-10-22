@@ -1,8 +1,7 @@
 "use client";
 
 import FdrSidebar from '@/components/front-desk-role/fdr-sidebar';
-import FDRProfileDropdown from '@/components/front-desk-role/fdr-profile-dropdown';
-import { FDRThemeToggle } from '@/components/front-desk-role/fdr-theme-toggle';
+import { FdrDashboardHeader } from '@/components/front-desk-role/fdr-dashboard-header';
 import { GooeyInput, SearchResult } from '@/components/ui/gooey-input';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -279,32 +278,26 @@ const CustomerManagement = () => {
       <FdrSidebar />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-20 shrink-0 flex items-center justify-between px-6 gap-4 border-b border-neutral-200 dark:border-[#1a1a1a] bg-white dark:bg-black">
-          <GooeyInput
-            placeholder="Search customers..."
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-            searchResults={customerSearchResults}
-            onResultSelect={handleCustomerSelect}
-            minSearchLength={1}
-            filterFunction={customerFilterFunction}
-            renderResult={(result) => (
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-semibold text-neutral-600">
-                  {result.data?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || '??'}
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-neutral-900 dark:text-neutral-100">{result.label}</p>
-                  <p className="text-xs text-neutral-500">{result.data?.email}</p>
-                </div>
+        <FdrDashboardHeader
+          placeholder="Search customers..."
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchResults={customerSearchResults}
+          onResultSelect={handleCustomerSelect}
+          minSearchLength={1}
+          filterFunction={customerFilterFunction}
+          renderResult={(result) => (
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-semibold text-neutral-600">
+                {result.data?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || '??'}
               </div>
-            )}
-          />
-          <div className="flex items-center gap-3">
-            <FDRThemeToggle />
-            <FDRProfileDropdown />
-          </div>
-        </header>
+              <div className="flex-1">
+                <p className="font-medium text-neutral-900 dark:text-neutral-100">{result.label}</p>
+                <p className="text-xs text-neutral-500">{result.data?.email}</p>
+              </div>
+            </div>
+          )}
+        />
 
         <main className="flex-1 overflow-y-auto p-6">
           {/* Title row */}

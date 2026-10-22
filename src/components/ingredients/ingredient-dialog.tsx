@@ -240,7 +240,7 @@ export function IngredientDialog({ open, onOpenChange, onSubmit, editData, isLoa
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isDuplicate ? "Duplicate Ingredient" : (editData ? "Edit Ingredient" : "Add New Ingredient")}
@@ -256,7 +256,7 @@ export function IngredientDialog({ open, onOpenChange, onSubmit, editData, isLoa
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name *</Label>
               <Input
@@ -284,7 +284,7 @@ export function IngredientDialog({ open, onOpenChange, onSubmit, editData, isLoa
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="category">Category *</Label>
@@ -343,7 +343,7 @@ export function IngredientDialog({ open, onOpenChange, onSubmit, editData, isLoa
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="quantity">Initial Quantity *</Label>
               <Input
@@ -387,7 +387,7 @@ export function IngredientDialog({ open, onOpenChange, onSubmit, editData, isLoa
           <div className="border-t pt-4">
             <h3 className="font-semibold mb-3">Bulk Tracking & Unit Conversions</h3>
             
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="bulkQuantity">Bulk Quantity</Label>
                 <Input
@@ -434,7 +434,7 @@ export function IngredientDialog({ open, onOpenChange, onSubmit, editData, isLoa
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="supplier">Supplier</Label>
               <Input
@@ -456,7 +456,7 @@ export function IngredientDialog({ open, onOpenChange, onSubmit, editData, isLoa
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="expiryDate">Expiry Date</Label>
               <Input

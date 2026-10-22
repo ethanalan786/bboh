@@ -169,7 +169,7 @@ export function ReviewInvoiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-full sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Review Invoice</DialogTitle>
@@ -188,7 +188,7 @@ export function ReviewInvoiceDialog({
                     Extracted vs Confirmed Data
                   </h4>
                   <div className="space-y-2 text-xs">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div>
                         <p className="text-blue-700 dark:text-blue-300 font-medium">Invoice Number</p>
                         <p className="text-muted-foreground">
@@ -229,7 +229,7 @@ export function ReviewInvoiceDialog({
           {/* Invoice Details */}
           <Card className="p-4">
             <h3 className="text-sm font-semibold mb-3">Invoice Details</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-muted-foreground">Invoice Number</p>
                 <p className="font-medium">{invoice.invoiceNumber}</p>
@@ -340,7 +340,7 @@ export function ReviewInvoiceDialog({
                 Landed Cost Breakdown
               </h3>
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="baseCost">Base Cost</Label>
                     <Input

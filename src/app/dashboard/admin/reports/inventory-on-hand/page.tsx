@@ -10,7 +10,7 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
     ChartContainer,
     ChartTooltip,
@@ -26,25 +26,44 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import {
-    Package,
-    DollarSign,
     AlertTriangle,
     Clock,
-    XCircle,
-    Search,
-    Filter,
+    DollarSign,
     Download,
-    MoreVertical,
+    Filter,
+    Package,
     Plus,
-    Edit,
-    Trash2,
-    BarChart3,
-    TrendingUp
+    Search,
+    XCircle
 } from "lucide-react"
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from "react"
-import { CartesianGrid, ComposedChart, Label, LabelList, Line, Pie, PieChart, XAxis, YAxis, Bar, BarChart, Cell } from "recharts"
+import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Label, LabelList, Line, Pie, PieChart, XAxis, YAxis } from "recharts"
+
+// Detects small screens (SSR-safe: defaults to false, updates after mount)
+function useIsMobile(breakpoint = 640) {
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`)
+        const update = () => setIsMobile(mq.matches)
+        update()
+        mq.addEventListener("change", update)
+        return () => mq.removeEventListener("change", update)
+    }, [breakpoint])
+
+    return isMobile
+}
+
+// Compact axis formatter: $950, $1.2K, $3K
+function formatAxisCurrency(value: number) {
+    if (Math.abs(value) >= 1000) {
+        const k = value / 1000
+        return `$${Number.isInteger(k) ? k : k.toFixed(1)}K`
+    }
+    return `$${value}`
+}
 
 // Summary Card Component
 function SummaryCard({
@@ -59,16 +78,16 @@ function SummaryCard({
     iconColor?: string
 }) {
     return (
-        <div className="bg-[#0a0a0a] rounded-xl p-4 border border-white/6">
-            <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconColor || 'bg-white/7 text-white/60'}`}>
+        <div className="bg-[#0a0a0a] rounded-xl p-3.5 sm:p-4 border border-white/6 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
+                <div className={`w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg flex items-center justify-center ${iconColor || 'bg-white/7 text-white/60'}`}>
                     {icon}
                 </div>
-                <div>
-                    <p className="text-2xl font-bold text-white tracking-tight">
+                <div className="min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold text-white tracking-tight truncate">
                         {value}
                     </p>
-                    <p className="text-xs text-white/40 mt-0.5">{label}</p>
+                    <p className="text-xs text-white/40 mt-0.5 truncate">{label}</p>
                 </div>
             </div>
         </div>
@@ -87,14 +106,14 @@ function StatusBadge({ status }: { status: string }) {
     const defaultStyle = "bg-white/10 text-white/70 border border-white/20"
 
     return (
-        <span className={`text-xs px-2 py-1 rounded-md font-medium ${statusStyles[status] || defaultStyle}`}>
+        <span className={`text-xs px-2 py-1 rounded-md font-medium whitespace-nowrap ${statusStyles[status] || defaultStyle}`}>
             {status}
         </span>
     )
 }
 
 // Stock by Category Chart
-function StockByCategoryChart({ inventoryData }: { inventoryData: any[] }) {
+function StockByCategoryChart({ inventoryData, isMobile }: { inventoryData: any[], isMobile: boolean }) {
     // Predefined color palette
     const colorPalette = [
         "#668e2b",
@@ -134,7 +153,7 @@ function StockByCategoryChart({ inventoryData }: { inventoryData: any[] }) {
             label: "Items",
         }
     }
-    
+
     // Add dynamic color configuration for each category
     categoryData.forEach((cat, index) => {
         const key = `category${index}`
@@ -143,7 +162,7 @@ function StockByCategoryChart({ inventoryData }: { inventoryData: any[] }) {
             color: cat.fill
         }
     })
-    
+
     // Map category data to use config keys
     const chartData = categoryData.map((cat, index) => ({
         ...cat,
@@ -163,14 +182,17 @@ function StockByCategoryChart({ inventoryData }: { inventoryData: any[] }) {
     } satisfies ChartConfig
 
     return (
-        <Card className="bg-[#0a0a0a] border-white/6">
-            <CardHeader>
-                <CardTitle className="text-white">Stock by Category</CardTitle>
-                <CardDescription className="text-white/40">Top 4 categories by item count</CardDescription>
+        <Card className="bg-[#0a0a0a] border-white/6 min-w-0">
+            <CardHeader className="px-4 sm:px-6">
+                <CardTitle className="text-white text-base sm:text-lg">Stock by Category</CardTitle>
+                <CardDescription className="text-white/40 text-xs sm:text-sm">Top 4 categories by item count</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="flex items-center gap-6">
-                    <ChartContainer config={chartConfig} className="h-48 w-48">
+            <CardContent className="px-4 sm:px-6">
+                <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center gap-4 sm:gap-6">
+                    <ChartContainer
+                        config={chartConfig}
+                        className="mx-auto aspect-square h-44 w-44 sm:h-48 sm:w-48 shrink-0"
+                    >
                         <PieChart>
                             <ChartTooltip
                                 cursor={false}
@@ -180,8 +202,8 @@ function StockByCategoryChart({ inventoryData }: { inventoryData: any[] }) {
                                 data={chartData}
                                 dataKey="count"
                                 nameKey="category"
-                                innerRadius={50}
-                                strokeWidth={5}
+                                innerRadius={isMobile ? 42 : 50}
+                                strokeWidth={isMobile ? 3 : 5}
                             >
                                 {chartData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -211,19 +233,19 @@ function StockByCategoryChart({ inventoryData }: { inventoryData: any[] }) {
                             </Pie>
                         </PieChart>
                     </ChartContainer>
-                    <div className="flex-1 space-y-3">
+                    <div className="w-full sm:flex-1 space-y-2.5 sm:space-y-3 min-w-0">
                         {chartData.map((item) => (
-                            <div key={item.category} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div 
-                                        className="w-3 h-3 rounded-full" 
+                            <div key={item.category} className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <div
+                                        className="w-3 h-3 shrink-0 rounded-full"
                                         style={{ backgroundColor: item.fill }}
                                     />
-                                    <span className="text-white/80 text-sm">{item.category}</span>
+                                    <span className="text-white/80 text-xs sm:text-sm truncate">{item.category}</span>
                                 </div>
-                                <div className="text-right">
-                                    <span className="text-white font-medium text-sm">{item.count as number}</span>
-                                    <span className="text-white/50 text-xs ml-2">({item.percentage as number}%)</span>
+                                <div className="text-right shrink-0">
+                                    <span className="text-white font-medium text-xs sm:text-sm">{item.count as number}</span>
+                                    <span className="text-white/50 text-xs ml-1.5 sm:ml-2">({item.percentage as number}%)</span>
                                 </div>
                             </div>
                         ))}
@@ -235,7 +257,7 @@ function StockByCategoryChart({ inventoryData }: { inventoryData: any[] }) {
 }
 
 // Stock Status Chart
-function StockStatusChart({ inventoryData }: { inventoryData: any[] }) {
+function StockStatusChart({ inventoryData, isMobile }: { inventoryData: any[], isMobile: boolean }) {
     // Calculate status distribution from real data
     const statusCount = inventoryData.reduce((acc, item) => {
         acc[item.status] = (acc[item.status] || 0) + 1
@@ -260,38 +282,43 @@ function StockStatusChart({ inventoryData }: { inventoryData: any[] }) {
     } satisfies ChartConfig
 
     return (
-        <Card className="bg-[#0a0a0a] border-white/6">
-            <CardHeader>
-                <CardTitle className="text-white">Stock Status</CardTitle>
-                <CardDescription className="text-white/40">Current inventory status</CardDescription>
+        <Card className="bg-[#0a0a0a] border-white/6 min-w-0">
+            <CardHeader className="px-4 sm:px-6">
+                <CardTitle className="text-white text-base sm:text-lg">Stock Status</CardTitle>
+                <CardDescription className="text-white/40 text-xs sm:text-sm">Current inventory status</CardDescription>
             </CardHeader>
-            <CardContent>
-                <ChartContainer config={statusConfig} className="h-48 w-full">
+            <CardContent className="px-2 sm:px-6">
+                <ChartContainer config={statusConfig} className="aspect-auto h-44 sm:h-48 w-full">
                     <BarChart
                         accessibilityLayer
                         data={statusData}
                         margin={{
                             top: 20,
+                            left: isMobile ? 0 : 8,
+                            right: isMobile ? 0 : 8,
                         }}
                     >
                         <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                         <XAxis
                             dataKey="status"
                             tickLine={false}
-                            tickMargin={10}
+                            tickMargin={isMobile ? 6 : 10}
                             axisLine={false}
-                            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12 }}
+                            interval={0}
+                            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: isMobile ? 10 : 12 }}
                         />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
-                        <Bar 
-                            dataKey="count" 
-                            fill="var(--color-count)" 
+                        <Bar
+                            dataKey="count"
+                            fill="var(--color-count)"
                             radius={8}
+                            maxBarSize={isMobile ? 56 : 80}
                         >
                             <LabelList
+                                dataKey="count"
                                 position="top"
                                 offset={12}
                                 className="fill-white"
@@ -306,7 +333,7 @@ function StockStatusChart({ inventoryData }: { inventoryData: any[] }) {
 }
 
 // Inventory Value Trend Chart
-function InventoryValueTrendChart({ historicalData }: { historicalData: any[] }) {
+function InventoryValueTrendChart({ historicalData, isMobile }: { historicalData: any[], isMobile: boolean }) {
     const trendData = historicalData.length > 0 ? historicalData : [
         { date: "No Data", value: 0 }
     ]
@@ -319,27 +346,36 @@ function InventoryValueTrendChart({ historicalData }: { historicalData: any[] })
     } satisfies ChartConfig
 
     return (
-        <Card className="bg-[#0a0a0a] border-white/6">
-            <CardHeader>
-                <CardTitle className="text-white">Inventory Value Trend</CardTitle>
-                <CardDescription className="text-white/40">Value over last 7 days</CardDescription>
+        <Card className="bg-[#0a0a0a] border-white/6 min-w-0">
+            <CardHeader className="px-4 sm:px-6">
+                <CardTitle className="text-white text-base sm:text-lg">Inventory Value Trend</CardTitle>
+                <CardDescription className="text-white/40 text-xs sm:text-sm">Value over last 7 days</CardDescription>
             </CardHeader>
-            <CardContent>
-                <ChartContainer config={trendConfig} className="h-48 w-full">
-                    <ComposedChart accessibilityLayer data={trendData}>
+            <CardContent className="px-2 sm:px-6">
+                <ChartContainer config={trendConfig} className="aspect-auto h-44 sm:h-48 w-full">
+                    <ComposedChart
+                        accessibilityLayer
+                        data={trendData}
+                        margin={isMobile
+                            ? { top: 8, right: 8, left: -8, bottom: 0 }
+                            : { top: 8, right: 8, left: 8, bottom: 0 }}
+                    >
                         <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                         <XAxis
                             dataKey="date"
                             tickLine={false}
-                            tickMargin={10}
+                            tickMargin={isMobile ? 6 : 10}
                             axisLine={false}
-                            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12 }}
+                            interval={isMobile ? "preserveStartEnd" : "preserveEnd"}
+                            minTickGap={isMobile ? 20 : 8}
+                            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: isMobile ? 10 : 12 }}
                         />
-                        <YAxis 
+                        <YAxis
+                            width={isMobile ? 38 : 56}
                             tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
                             tickLine={false}
                             axisLine={false}
-                            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                            tickFormatter={formatAxisCurrency}
                         />
                         <ChartTooltip
                             cursor={false}
@@ -348,9 +384,9 @@ function InventoryValueTrendChart({ historicalData }: { historicalData: any[] })
                         <Line
                             dataKey="value"
                             stroke="#668e2b"
-                            strokeWidth={3}
-                            dot={{ fill: "#668e2b", r: 4 }}
-                            activeDot={{ r: 6 }}
+                            strokeWidth={isMobile ? 2 : 3}
+                            dot={{ fill: "#668e2b", r: isMobile ? 3 : 4 }}
+                            activeDot={{ r: isMobile ? 5 : 6 }}
                         />
                     </ComposedChart>
                 </ChartContainer>
@@ -362,6 +398,7 @@ function InventoryValueTrendChart({ historicalData }: { historicalData: any[] })
 export default function InventoryOnHandDashboard() {
     const { data: session, status } = useSession()
     const router = useRouter()
+    const isMobile = useIsMobile()
 
     const [searchTerm, setSearchTerm] = useState("")
     const [categoryFilter, setCategoryFilter] = useState("all")
@@ -387,10 +424,10 @@ export default function InventoryOnHandDashboard() {
 
     // Get unique units from inventory data
     const units = Array.from(new Set(inventoryData.map(item => item.unit)))
-    
+
     // Get unique categories from inventory data
     const categories = Array.from(new Set(inventoryData.map(item => item.category)))
-    
+
     // Get unique businesses from inventory data
     const businesses = Array.from(new Set(inventoryData.map(item => item.business)))
 
@@ -403,6 +440,45 @@ export default function InventoryOnHandDashboard() {
 
     // Ensure currentPage is within valid range
     const safeCurrentPage = Math.min(currentPage, Math.max(1, totalPages))
+
+    // Generate page numbers with ellipsis for large page counts
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = []
+        const maxVisible = 7  // Maximum number of page buttons to show
+
+        if (totalPages <= maxVisible) {
+            // Show all pages if total is less than or equal to maxVisible
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i)
+            }
+        } else {
+            // Always show first page
+            pages.push(1)
+
+            if (safeCurrentPage > 3) {
+                pages.push('...')
+            }
+
+            // Show pages around current page
+            const start = Math.max(2, safeCurrentPage - 1)
+            const end = Math.min(totalPages - 1, safeCurrentPage + 1)
+
+            for (let i = start; i <= end; i++) {
+                pages.push(i)
+            }
+
+            if (safeCurrentPage < totalPages - 2) {
+                pages.push('...')
+            }
+
+            // Always show last page
+            pages.push(totalPages)
+        }
+
+        return pages
+    }
+
+    const pageNumbers = getPageNumbers()
 
     // Fetch inventory data from API
     useEffect(() => {
@@ -423,7 +499,7 @@ export default function InventoryOnHandDashboard() {
 
                 const response = await fetch(`/api/reports/inventory-on-hand?${params.toString()}`)
                 if (!response.ok) throw new Error('Failed to fetch inventory data')
-                
+
                 const data = await response.json()
                 setInventoryData(data.inventory || [])
                 setHistoricalData(data.historicalData || [])
@@ -458,7 +534,7 @@ export default function InventoryOnHandDashboard() {
         <div className="font-archivo">
             <SidebarProvider>
                 <AppSidebar />
-                <SidebarInset>
+                <SidebarInset className="min-w-0">
                     <header className="flex h-14 shrink-0 items-center gap-2 border-b">
                         <div className="flex items-center gap-2 px-4">
                             <SidebarTrigger className="-ml-1" />
@@ -481,22 +557,22 @@ export default function InventoryOnHandDashboard() {
                         </div>
                     </header>
 
-                    <div className="flex flex-1 flex-col gap-5 px-4 sm:gap-6 sm:px-6 pt-5">
+                    <div className="flex flex-1 flex-col gap-4 px-3 sm:gap-6 sm:px-6 pt-4 sm:pt-5 pb-6 min-w-0">
                         {/* Page Header */}
-                        <div className="flex flex-wrap items-start justify-between gap-4">
-                            <div>
-                                <h1 className="text-2xl font-bold text-white mb-1">
+                        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-start sm:justify-between gap-4">
+                            <div className="min-w-0">
+                                <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">
                                     Inventory On Hand
                                 </h1>
-                                <p className="text-sm text-white/40">
+                                <p className="text-xs sm:text-sm text-white/40">
                                     Current stock levels for all products and ingredients
                                 </p>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                            <div className="flex items-center gap-2 w-full sm:w-auto">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex-1 sm:flex-none bg-white/10 border-white/20 text-white hover:bg-white/20"
                                     onClick={() => {
                                         // Export functionality
                                         const csvContent = [
@@ -529,9 +605,9 @@ export default function InventoryOnHandDashboard() {
                                     <Download size={16} className="mr-2" />
                                     Export
                                 </Button>
-                                <Button 
-                                    size="sm" 
-                                    className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                                <Button
+                                    size="sm"
+                                    className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white"
                                     onClick={() => router.push("/dashboard/admin/box-apparel/products")}
                                 >
                                     <Plus size={16} className="mr-2" />
@@ -540,8 +616,8 @@ export default function InventoryOnHandDashboard() {
                             </div>
                         </div>
 
-                        {/* Summary Cards */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        {/* Summary Cards (last card spans full width on mobile to avoid an orphan) */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 [&>*:last-child]:col-span-2 md:[&>*:last-child]:col-span-1">
                             <SummaryCard
                                 icon={<Package size={20} />}
                                 value={loading ? "..." : totalIngredients.toString()}
@@ -576,15 +652,15 @@ export default function InventoryOnHandDashboard() {
 
                         {/* Charts Row */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                            <StockByCategoryChart inventoryData={inventoryData} />
-                            <StockStatusChart inventoryData={inventoryData} />
-                            <InventoryValueTrendChart historicalData={historicalData} />
+                            <StockByCategoryChart inventoryData={inventoryData} isMobile={isMobile} />
+                            <StockStatusChart inventoryData={inventoryData} isMobile={isMobile} />
+                            <InventoryValueTrendChart historicalData={historicalData} isMobile={isMobile} />
                         </div>
 
                         {/* Filters */}
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                             {/* Basic Filters */}
-                            <div className="flex flex-col lg:flex-row gap-4 items-start">
+                            <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 items-stretch lg:items-start">
                                 {/* Search Bar */}
                                 <div className="relative flex-1 w-full lg:w-auto">
                                     <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
@@ -592,14 +668,14 @@ export default function InventoryOnHandDashboard() {
                                         placeholder="Search items..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-12 h-12 bg-white/5 border-white/10 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                                        className="pl-12 h-11 sm:h-12 bg-white/5 border-white/10 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                                     />
                                 </div>
-                                
-                                {/* Basic Filter Dropdowns */}
-                                <div className="flex flex-row justify-center gap-2 w-full lg:w-auto">
-                                    <Select className="w-fit min-w-52" value={categoryFilter} onValueChange={setCategoryFilter}>
-                                        <SelectTrigger className="h-12 px-4 bg-white/5 border-white/10 rounded-xl text-white hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
+
+                                {/* Basic Filter Dropdowns: 2x2 grid on mobile, single row on desktop */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:flex-row lg:justify-center gap-2 w-full lg:w-auto">
+                                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                                        <SelectTrigger className="w-full lg:w-auto lg:min-w-52 h-11 sm:h-12 px-3 sm:px-4 bg-white/5 border-white/10 rounded-xl text-white text-sm hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-xl">
@@ -615,8 +691,8 @@ export default function InventoryOnHandDashboard() {
                                             )}
                                         </SelectContent>
                                     </Select>
-                                    <Select className="w-fit min-w-40"  value={statusFilter} onValueChange={setStatusFilter}>
-                                        <SelectTrigger className="h-12 px-4 bg-white/5 border-white/10 rounded-xl text-white hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
+                                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                        <SelectTrigger className="w-full lg:w-auto lg:min-w-40 h-11 sm:h-12 px-3 sm:px-4 bg-white/5 border-white/10 rounded-xl text-white text-sm hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-xl">
@@ -628,7 +704,7 @@ export default function InventoryOnHandDashboard() {
                                         </SelectContent>
                                     </Select>
                                     <Select value={businessFilter} onValueChange={setBusinessFilter}>
-                                        <SelectTrigger className="h-12 px-4 bg-white/5 border-white/10 rounded-xl text-white hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
+                                        <SelectTrigger className="w-full lg:w-auto h-11 sm:h-12 px-3 sm:px-4 bg-white/5 border-white/10 rounded-xl text-white text-sm hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-xl">
@@ -644,10 +720,10 @@ export default function InventoryOnHandDashboard() {
                                             )}
                                         </SelectContent>
                                     </Select>
-                                    <Button 
-                                        variant="ghost" 
-                                        size="sm" 
-                                        className="h-12 px-4 bg-white/5 border-white/10 rounded-xl text-white/70 hover:bg-white/10 hover:text-white"
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="w-full lg:w-auto h-11 sm:h-12 px-3 sm:px-4 bg-white/5 border-white/10 rounded-xl text-white/70 hover:bg-white/10 hover:text-white"
                                         onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                                     >
                                         <Filter size={16} className="mr-2" />
@@ -658,13 +734,13 @@ export default function InventoryOnHandDashboard() {
 
                             {/* Advanced Filters */}
                             {showAdvancedFilters && (
-                                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                         {/* Unit Filter */}
                                         <div className="space-y-2">
                                             <label className="text-xs text-white/50 uppercase tracking-wider">Unit</label>
                                             <Select value={unitFilter} onValueChange={setUnitFilter}>
-                                                <SelectTrigger className="h-10 bg-white/5 border-white/10 rounded-lg text-white hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
+                                                <SelectTrigger className="w-full h-10 bg-white/5 border-white/10 rounded-lg text-white hover:bg-white/10 focus:ring-1 focus:ring-emerald-500/50">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-[#0a0a0a] border-white/10 rounded-lg">
@@ -688,15 +764,17 @@ export default function InventoryOnHandDashboard() {
                                             <div className="flex gap-2">
                                                 <Input
                                                     placeholder="Min"
+                                                    inputMode="decimal"
                                                     value={priceRange.min}
                                                     onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-                                                    className="h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                                                    className="min-w-0 h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                                                 />
                                                 <Input
                                                     placeholder="Max"
+                                                    inputMode="decimal"
                                                     value={priceRange.max}
                                                     onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-                                                    className="h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                                                    className="min-w-0 h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                                                 />
                                             </div>
                                         </div>
@@ -707,15 +785,17 @@ export default function InventoryOnHandDashboard() {
                                             <div className="flex gap-2">
                                                 <Input
                                                     placeholder="Min"
+                                                    inputMode="decimal"
                                                     value={stockRange.min}
                                                     onChange={(e) => setStockRange({ ...stockRange, min: e.target.value })}
-                                                    className="h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                                                    className="min-w-0 h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                                                 />
                                                 <Input
                                                     placeholder="Max"
+                                                    inputMode="decimal"
                                                     value={stockRange.max}
                                                     onChange={(e) => setStockRange({ ...stockRange, max: e.target.value })}
-                                                    className="h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                                                    className="min-w-0 h-10 bg-white/5 border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                                                 />
                                             </div>
                                         </div>
@@ -723,9 +803,9 @@ export default function InventoryOnHandDashboard() {
                                         {/* Clear Filters */}
                                         <div className="space-y-2">
                                             <label className="text-xs text-white/50 uppercase tracking-wider">Actions</label>
-                                            <Button 
-                                                variant="outline" 
-                                                size="sm" 
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
                                                 className="w-full h-10 bg-white/5 border-white/10 text-white hover:bg-white/10"
                                                 onClick={() => {
                                                     setSearchTerm("")
@@ -746,7 +826,7 @@ export default function InventoryOnHandDashboard() {
                         </div>
 
                         {/* Inventory Table */}
-                        <Card className="bg-[#0a0a0a] border-white/6">
+                        <Card className="bg-[#0a0a0a] border-white/6 min-w-0">
                             <CardContent className="p-0">
                                 {loading ? (
                                     <div className="flex items-center justify-center py-12">
@@ -762,86 +842,86 @@ export default function InventoryOnHandDashboard() {
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
-                                        <table className="w-full">
-                                        <thead>
-                                            <tr className="border-b border-white/10">
-                                                <th className="text-left p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Image</th>
-                                                <th className="text-left p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Item</th>
-                                                <th className="text-left p-4 text-xs font-medium text-white/50 uppercase tracking-wider">SKU</th>
-                                                <th className="text-left p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Category</th>
-                                                <th className="text-left p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Business</th>
-                                                <th className="text-left p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Unit</th>
-                                                <th className="text-right p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Current Stock</th>
-                                                <th className="text-right p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Min Stock</th>
-                                                <th className="text-right p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Cost/Unit</th>
-                                                <th className="text-right p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Total Value</th>
-                                                <th className="text-center p-4 text-xs font-medium text-white/50 uppercase tracking-wider">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {paginatedData.map((item) => (
-                                                <tr key={item.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                                    <td className="p-4">
-                                                        {item.image ? (
-                                                            <img 
-                                                                src={item.image} 
-                                                                alt={item.name}
-                                                                className="w-12 h-12 rounded-lg object-cover"
-                                                            />
-                                                        ) : (
-                                                            <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center">
-                                                                <Package size={20} className="text-white/30" />
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <div className="text-sm font-medium text-white">{item.name}</div>
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <div className="text-sm text-white/70">{item.sku}</div>
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <div className="text-sm text-white/70">{item.category}</div>
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <div className="text-sm text-white/70">{item.business}</div>
-                                                    </td>
-                                                    <td className="p-4">
-                                                        <div className="text-sm text-white/70">{item.unit}</div>
-                                                    </td>
-                                                    <td className="p-4 text-right">
-                                                        <div className="text-sm font-medium text-white">{item.currentStock.toFixed(1)}</div>
-                                                    </td>
-                                                    <td className="p-4 text-right">
-                                                        <div className="text-sm text-white/70">{item.minStock}</div>
-                                                    </td>
-                                                    <td className="p-4 text-right">
-                                                        <div className="text-sm text-white/70">${item.costPerUnit.toFixed(2)}</div>
-                                                    </td>
-                                                    <td className="p-4 text-right">
-                                                        <div className="text-sm font-medium text-white">${item.totalValue.toFixed(2)}</div>
-                                                    </td>
-                                                    <td className="p-4 text-center">
-                                                        <StatusBadge status={item.status} />
-                                                    </td>
+                                        <table className="w-full min-w-[1000px]">
+                                            <thead>
+                                                <tr className="border-b border-white/10">
+                                                    <th className="text-left p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Image</th>
+                                                    <th className="text-left p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Item</th>
+                                                    <th className="text-left p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">SKU</th>
+                                                    <th className="text-left p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Category</th>
+                                                    <th className="text-left p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Business</th>
+                                                    <th className="text-left p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Unit</th>
+                                                    <th className="text-right p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Current Stock</th>
+                                                    <th className="text-right p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Min Stock</th>
+                                                    <th className="text-right p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Cost/Unit</th>
+                                                    <th className="text-right p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Total Value</th>
+                                                    <th className="text-center p-3 sm:p-4 text-[10px] sm:text-xs font-medium text-white/50 uppercase tracking-wider whitespace-nowrap">Status</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                    )}
+                                            </thead>
+                                            <tbody>
+                                                {paginatedData.map((item) => (
+                                                    <tr key={item.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                                        <td className="p-3 sm:p-4">
+                                                            {item.image ? (
+                                                                <img
+                                                                    src={item.image}
+                                                                    alt={item.name}
+                                                                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-white/5 flex items-center justify-center">
+                                                                    <Package size={20} className="text-white/30" />
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td className="p-3 sm:p-4">
+                                                            <div className="text-sm font-medium text-white">{item.name}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4">
+                                                            <div className="text-sm text-white/70 whitespace-nowrap">{item.sku}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4">
+                                                            <div className="text-sm text-white/70">{item.category}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4">
+                                                            <div className="text-sm text-white/70">{item.business}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4">
+                                                            <div className="text-sm text-white/70">{item.unit}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4 text-right">
+                                                            <div className="text-sm font-medium text-white">{item.currentStock.toFixed(1)}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4 text-right">
+                                                            <div className="text-sm text-white/70">{item.minStock}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4 text-right">
+                                                            <div className="text-sm text-white/70">${item.costPerUnit.toFixed(2)}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4 text-right">
+                                                            <div className="text-sm font-medium text-white">${item.totalValue.toFixed(2)}</div>
+                                                        </td>
+                                                        <td className="p-3 sm:p-4 text-center">
+                                                            <StatusBadge status={item.status} />
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
                             </CardContent>
                             {totalPages > 1 && !loading && !error && inventoryData.length > 0 && (
-                                <CardContent className="p-4 pt-0">
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-sm text-white/50">
+                                <CardContent className="p-3 sm:p-4 pt-0">
+                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                                        <div className="text-xs sm:text-sm text-white/50 text-center sm:text-left">
                                             Showing {inventoryData.length > 0 ? ((safeCurrentPage - 1) * itemsPerPage) + 1 : 0} to {inventoryData.length > 0 ? Math.min(safeCurrentPage * itemsPerPage, inventoryData.length) : 0} of {inventoryData.length} items
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
                                             <button
                                                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                                 disabled={safeCurrentPage === 1}
-                                                className="group relative inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+                                                className="group relative inline-flex items-center justify-center rounded-lg px-3 sm:px-4 py-2 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
                                                 style={{
                                                     background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                                                     border: '1px solid rgba(255,255,255,0.1)',
@@ -864,45 +944,62 @@ export default function InventoryOnHandDashboard() {
                                                 </svg>
                                                 Previous
                                             </button>
-                                            <div className="flex items-center gap-1">
-                                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                                    <button
-                                                        key={page}
-                                                        onClick={() => setCurrentPage(page)}
-                                                        className="relative inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-all duration-200 rounded-lg hover:scale-110 active:scale-95"
-                                                        style={safeCurrentPage === page ? {
-                                                            background: 'linear-gradient(135deg, rgba(102, 142, 43, 0.3) 0%, rgba(102, 142, 43, 0.15) 100%)',
-                                                            border: '1px solid rgba(102, 142, 43, 0.4)',
-                                                            color: '#668e2b',
-                                                            boxShadow: '0 0 20px rgba(102, 142, 43, 0.3), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                                                        } : {
-                                                            background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
-                                                            border: '1px solid rgba(255,255,255,0.1)',
-                                                            color: 'rgba(255,255,255,0.6)'
-                                                        }}
-                                                        onMouseEnter={(e) => {
-                                                            if (safeCurrentPage !== page) {
-                                                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)'
-                                                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
-                                                                e.currentTarget.style.color = 'rgba(255,255,255,0.9)'
-                                                            }
-                                                        }}
-                                                        onMouseLeave={(e) => {
-                                                            if (safeCurrentPage !== page) {
-                                                                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)'
-                                                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-                                                                e.currentTarget.style.color = 'rgba(255,255,255,0.6)'
-                                                            }
-                                                        }}
-                                                    >
-                                                        {page}
-                                                    </button>
+
+                                            {/* Mobile: compact page indicator */}
+                                            <span className="sm:hidden text-xs text-white/60 whitespace-nowrap">
+                                                Page {safeCurrentPage} of {totalPages}
+                                            </span>
+
+                                            {/* Desktop: numbered pages */}
+                                            <div className="hidden sm:flex items-center gap-1">
+                                                {pageNumbers.map((page, index) => (
+                                                    page === '...' ? (
+                                                        <span
+                                                            key={`ellipsis-${index}`}
+                                                            className="relative inline-flex items-center justify-center w-10 h-10 text-sm font-medium text-white/40"
+                                                        >
+                                                            ...
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            key={page}
+                                                            onClick={() => setCurrentPage(page as number)}
+                                                            className="relative inline-flex items-center justify-center w-10 h-10 text-sm font-medium transition-all duration-200 rounded-lg hover:scale-110 active:scale-95"
+                                                            style={safeCurrentPage === page ? {
+                                                                background: 'linear-gradient(135deg, rgba(102, 142, 43, 0.3) 0%, rgba(102, 142, 43, 0.15) 100%)',
+                                                                border: '1px solid rgba(102, 142, 43, 0.4)',
+                                                                color: '#668e2b',
+                                                                boxShadow: '0 0 20px rgba(102, 142, 43, 0.3), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                                            } : {
+                                                                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)',
+                                                                border: '1px solid rgba(255,255,255,0.1)',
+                                                                color: 'rgba(255,255,255,0.6)'
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                if (safeCurrentPage !== page) {
+                                                                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)'
+                                                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
+                                                                    e.currentTarget.style.color = 'rgba(255,255,255,0.9)'
+                                                                }
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                if (safeCurrentPage !== page) {
+                                                                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)'
+                                                                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+                                                                    e.currentTarget.style.color = 'rgba(255,255,255,0.6)'
+                                                                }
+                                                            }}
+                                                        >
+                                                            {page}
+                                                        </button>
+                                                    )
                                                 ))}
                                             </div>
+
                                             <button
                                                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                                 disabled={safeCurrentPage === totalPages}
-                                                className="group relative inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+                                                className="group relative inline-flex items-center justify-center rounded-lg px-3 sm:px-4 py-2 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
                                                 style={{
                                                     background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                                                     border: '1px solid rgba(255,255,255,0.1)',

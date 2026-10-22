@@ -401,17 +401,19 @@ export default function PurchaseOrderDetailPage({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <StatusBadge status={purchaseOrder.status} />
                 {purchaseOrder.status !== 'RECEIVED' && purchaseOrder.status !== 'CANCELLED' && (
-                  <Button onClick={() => setIsReceiveDialogOpen(true)}>
+                  <Button onClick={() => setIsReceiveDialogOpen(true)} className="w-full sm:w-auto">
                     <Truck className="h-4 w-4 mr-2" />
-                    Receive Inventory
+                    <span className="hidden sm:inline">Receive Inventory</span>
+                    <span className="sm:hidden">Receive</span>
                   </Button>
                 )}
-                <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)}>
+                <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)} className="w-full sm:w-auto">
                   <Upload className="h-4 w-4 mr-2" />
-                  Upload Invoice
+                  <span className="hidden sm:inline">Upload Invoice</span>
+                  <span className="sm:hidden">Upload</span>
                 </Button>
               </div>
             </div>
@@ -464,26 +466,28 @@ export default function PurchaseOrderDetailPage({
             <Card className="p-4">
               <h2 className="text-sm font-semibold mb-4">Order Items</h2>
               {purchaseOrder.items && Array.isArray(purchaseOrder.items) && purchaseOrder.items.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Item</TableHead>
-                      <TableHead>Quantity</TableHead>
-                      <TableHead>Unit Price</TableHead>
-                      <TableHead>Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {purchaseOrder.items.map((item: any, index: number) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{item.name || item.productName || 'Item'}</TableCell>
-                        <TableCell>{item.quantity || 0}</TableCell>
-                        <TableCell>{currency(item.unitPrice || item.price || 0)}</TableCell>
-                        <TableCell>{currency((item.quantity || 0) * (item.unitPrice || item.price || 0))}</TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Unit Price</TableHead>
+                        <TableHead>Total</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {purchaseOrder.items.map((item: any, index: number) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{item.name || item.productName || 'Item'}</TableCell>
+                          <TableCell>{item.quantity || 0}</TableCell>
+                          <TableCell>{currency(item.unitPrice || item.price || 0)}</TableCell>
+                          <TableCell>{currency((item.quantity || 0) * (item.unitPrice || item.price || 0))}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               ) : (
                 <p className="text-sm text-muted-foreground">No items in this order</p>
               )}
@@ -493,51 +497,53 @@ export default function PurchaseOrderDetailPage({
             <Card className="p-4">
               <h2 className="text-sm font-semibold mb-4">Invoices ({purchaseOrder.invoices.length})</h2>
               {purchaseOrder.invoices.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Invoice Number</TableHead>
-                      <TableHead>Invoice Date</TableHead>
-                      <TableHead>Total Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {purchaseOrder.invoices.map((invoice) => (
-                      <TableRow key={invoice.id}>
-                        <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
-                        <TableCell>{format(new Date(invoice.invoiceDate), "MMM d, yyyy")}</TableCell>
-                        <TableCell>{currency(invoice.totalAmount)}</TableCell>
-                        <TableCell>
-                          <StatusBadge status={invoice.status} />
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            {invoice.fileUrl && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDownloadInvoice(invoice)}
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
-                            )}
-                            {invoice.status === 'PENDING_REVIEW' || invoice.status === 'UNDER_REVIEW' ? (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleReviewInvoice(invoice)}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            ) : null}
-                          </div>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Invoice Number</TableHead>
+                        <TableHead>Invoice Date</TableHead>
+                        <TableHead>Total Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {purchaseOrder.invoices.map((invoice) => (
+                        <TableRow key={invoice.id}>
+                          <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
+                          <TableCell>{format(new Date(invoice.invoiceDate), "MMM d, yyyy")}</TableCell>
+                          <TableCell>{currency(invoice.totalAmount)}</TableCell>
+                          <TableCell>
+                            <StatusBadge status={invoice.status} />
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              {invoice.fileUrl && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleDownloadInvoice(invoice)}
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {invoice.status === 'PENDING_REVIEW' || invoice.status === 'UNDER_REVIEW' ? (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleReviewInvoice(invoice)}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              ) : null}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               ) : (
                 <p className="text-sm text-muted-foreground">No invoices uploaded yet</p>
               )}
@@ -574,7 +580,7 @@ export default function PurchaseOrderDetailPage({
 
       {/* Receive Inventory Confirmation Dialog */}
       <Dialog open={isReceiveDialogOpen} onOpenChange={setIsReceiveDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-full sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Receive Inventory</DialogTitle>
           </DialogHeader>

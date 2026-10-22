@@ -99,7 +99,7 @@ export function UserTable({ paginatedUsers, totalPages, sorting, onSortingChange
             table.getRowModel().rows.map((row: any) => (
               <TableRow key={row.id}>
                 {row.getAllCells().map((cell: any) => (
-                  <TableCell key={cell.id} className='h-14 first:w-12.5 first:pl-4 last:w-29 last:px-4 whitespace-nowrap'>
+                  <TableCell key={cell.id} className='h-14 whitespace-nowrap'>
                     <table.FlexRender cell={cell} />
                   </TableCell>
                 ))}

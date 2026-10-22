@@ -317,7 +317,7 @@ export function UploadInvoiceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{purchaseOrderId ? 'Upload Invoice' : 'Upload Invoice for Purchase Order'}</DialogTitle>
         </DialogHeader>
@@ -532,7 +532,7 @@ export function UploadInvoiceDialog({
           </div>
 
           {/* Amounts */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="totalAmount">Total Amount *</Label>
@@ -712,7 +712,7 @@ export function UploadInvoiceDialog({
               </div>
 
               {/* Amounts */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="totalAmount">Total Amount *</Label>

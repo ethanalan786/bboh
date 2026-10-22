@@ -122,7 +122,7 @@ export function SaleDialog({ open, onOpenChange, onSubmit, isLoading, availableR
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-full sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Record Burn Box Sale</DialogTitle>
           <DialogDescription>
@@ -167,7 +167,7 @@ export function SaleDialog({ open, onOpenChange, onSubmit, isLoading, availableR
             {errors.quantity && <p className="text-sm text-red-500">{errors.quantity}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="customerName">Customer Name</Label>
               <Input
@@ -210,7 +210,7 @@ export function SaleDialog({ open, onOpenChange, onSubmit, isLoading, availableR
           {formData.recipeId && (
             <div className="border-t pt-4">
               <h3 className="font-semibold mb-3">Sale Summary</h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-3 border rounded-lg">
                   <p className="text-xs text-muted-foreground">Total</p>
                   <p className="text-lg font-bold">${total.toFixed(2)}</p>

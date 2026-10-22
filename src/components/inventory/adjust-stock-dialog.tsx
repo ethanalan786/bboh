@@ -113,7 +113,7 @@ export function AdjustStockDialog({ open, onOpenChange, product, onStockAdjusted
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md font-archivo">
+      <DialogContent className="max-w-full sm:max-w-md font-archivo">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[#668e2b]/10 rounded-lg">

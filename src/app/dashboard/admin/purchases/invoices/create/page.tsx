@@ -247,7 +247,7 @@ export default function CreatePurchaseOrderPage() {
 
           <div className="flex flex-1 flex-col gap-5 p-4 sm:gap-6 sm:p-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="sm:flex-row w-full flex-col flex items-start gap-3 justify-between">
               <div className="flex items-center gap-3">
                 <Button
                   variant="ghost"
@@ -265,6 +265,7 @@ export default function CreatePurchaseOrderPage() {
               </div>
               
               <Button
+              className="w-full"
                 type="button"
                 variant="outline"
                 onClick={() => setShowInvoiceUpload(true)}

@@ -448,7 +448,8 @@ export default function AdjustmentsPage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Popover open={showFilters} onOpenChange={setShowFilters}>
+                <div className="flex items-center gap-2">
+                <Popover open={showFilters} onOpenChange={setShowFilters} >
                   <PopoverTrigger>
                     <Button variant="outline" size="icon" className={hasActiveFilters ? "bg-accent" : ""}>
                       <Filter className="h-4 w-4" />
@@ -532,10 +533,11 @@ export default function AdjustmentsPage() {
                 <Button variant="outline" size="icon" onClick={exportToCSV}>
                   <Download className="h-4 w-4" />
                 </Button>
-                <Button onClick={handleRecordAdjustment}>
+                <Button onClick={handleRecordAdjustment} className="flex-1 sm:flex-none">
                   <Plus className="h-4 w-4 mr-2" />
                   Record Adjustment
                 </Button>
+                </div>
               </div>
             </div>
 
