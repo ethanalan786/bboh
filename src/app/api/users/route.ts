@@ -41,6 +41,55 @@ export async function GET(request: Request) {
   }
 }
 
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { name, email, password, role, phone, address, city, state, zipCode } = body
+
+    if (!name || !email || !password || !role) {
+      return NextResponse.json({ error: 'Name, email, password, and role are required' }, { status: 400 })
+    }
+
+    // Check if email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    })
+
+    if (existingUser) {
+      return NextResponse.json({ error: 'Email already in use' }, { status: 400 })
+    }
+
+    // Create user
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password,
+        role,
+        phone: phone || null,
+        address: address || null,
+        city: city || null,
+        state: state || null,
+        zipCode: zipCode || null
+      }
+    })
+
+    return NextResponse.json(newUser)
+  } catch (error) {
+    console.error("Error creating user:", error)
+    return NextResponse.json(
+      { error: "Failed to create user", details: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 }
+    )
+  }
+}
+
 export async function PUT(request: Request) {
   try {
     const session = await getServerSession(authOptions)

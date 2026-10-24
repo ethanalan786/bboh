@@ -53,6 +53,7 @@ import {
   Edit
 } from "lucide-react"
 import { UserEditDialog } from "@/components/users/user-edit-dialog"
+import { UserCreateDialog } from "@/components/users/user-create-dialog"
 import { DeleteConfirmationDialog } from "@/components/shared/delete-confirmation-dialog"
 import { format } from "date-fns"
 
@@ -87,6 +88,10 @@ const UsersPage = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
+  
+  // Create dialog states
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
   
   // Delete dialog states
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -216,6 +221,32 @@ const UsersPage = () => {
     }
   }
 
+  const handleUserCreate = async (data: any) => {
+    try {
+      setIsCreating(true)
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+
+      if (response.ok) {
+        setIsCreateDialogOpen(false)
+        await fetchUsers()
+      } else {
+        const errorData = await response.json()
+        alert(errorData.error || "Failed to create user")
+      }
+    } catch (error) {
+      console.error("Error creating user:", error)
+      alert("Failed to create user")
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'ADMIN':
@@ -278,6 +309,12 @@ const UsersPage = () => {
                 <p className="text-sm text-muted-foreground">Manage user accounts and permissions</p>
               </div>
               <div className="flex gap-2">
+                <Button
+                  onClick={() => setIsCreateDialogOpen(true)}
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add User
+                </Button>
                 <Button
                   variant="outline"
                   size="icon"
@@ -400,7 +437,7 @@ const UsersPage = () => {
                               {user.image ? (
                                 <img src={user.image} alt={user.name} className="h-full w-full object-cover" />
                               ) : (
-                                <div className="h-full w-full flex items-center justify-center bg-linear-to-br from-blue-500 to-purple-500 text-white text-xs font-medium">
+                                <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500 text-white text-xs font-medium">
                                   {user.name.charAt(0).toUpperCase()}
                                 </div>
                               )}
@@ -477,6 +514,13 @@ const UsersPage = () => {
         user={editingUser}
         onSubmit={handleUserUpdate}
         isLoading={isUpdating}
+      />
+
+      <UserCreateDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        onSubmit={handleUserCreate}
+        isLoading={isCreating}
       />
 
       <DeleteConfirmationDialog
