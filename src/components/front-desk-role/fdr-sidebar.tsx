@@ -19,6 +19,7 @@ import {
     Edit,
     History,
     User,
+    CircleHelp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import FDRProfileDropdown from "@/components/front-desk-role/fdr-profile-dropdown";
@@ -48,6 +49,7 @@ const NAV_ITEMS: NavItem[] = [
     { icon: Clock, label: "My Recent Sales", href: "/dashboard/front-desk-role/sales" },
     { icon: Edit, label: "Adjustments", href: "/dashboard/front-desk-role/adjustments" },
     { icon: User, label: "Customers", href: "/dashboard/front-desk-role/customers" },
+    { icon: CircleHelp, label: "Help & Guide", href: "/dashboard/front-desk-role/help" },
 ];
 
 

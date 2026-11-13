@@ -14,6 +14,7 @@ import {
   LogOut,
   User,
   ChevronDown,
+  CircleHelp,
 } from "lucide-react";
 
 interface FDRProfileDropdownProps {
@@ -63,6 +64,13 @@ export default function FDRProfileDropdown({ variant = 'header' }: FDRProfileDro
         <DropdownMenuItem onClick={handleProfileClick} className="dark:text-white dark:focus:bg-[#1a1a1a]">
           <User size={16} />
           Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => { router.push('/dashboard/front-desk-role/help'); }}
+          className="dark:text-white dark:focus:bg-[#1a1a1a]"
+        >
+          <CircleHelp size={16} />
+          Help & Guide
         </DropdownMenuItem>
         <DropdownMenuSeparator className="dark:bg-[#1a1a1a]" />
         <DropdownMenuItem

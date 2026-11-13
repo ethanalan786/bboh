@@ -21,7 +21,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { UnfoldMoreIcon, SparklesIcon, CheckmarkBadgeIcon, CreditCardIcon, NotificationIcon, LogoutIcon, Sun01Icon, Moon02Icon } from "@hugeicons/core-free-icons"
+import { UnfoldMoreIcon, SparklesIcon, CheckmarkBadgeIcon, CreditCardIcon, NotificationIcon, LogoutIcon, Sun01Icon, Moon02Icon, HelpCircleIcon } from "@hugeicons/core-free-icons"
 import { signOut } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
@@ -129,6 +129,15 @@ export function NavUser({
                 Settings
               </DropdownMenuItem>
                </Link>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <Link href="/dashboard/admin/help" className="cursor-pointer">
+              <DropdownMenuItem>
+                <HugeiconsIcon icon={HelpCircleIcon} strokeWidth={2} />
+                Help &amp; Guide
+              </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>

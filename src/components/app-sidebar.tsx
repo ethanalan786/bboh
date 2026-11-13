@@ -11,10 +11,16 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { CropIcon, FileTextIcon, LayoutBottomIcon, MapsIcon, PieChartIcon, Settings01Icon, SparklesIcon } from "@hugeicons/core-free-icons"
+import { CropIcon, FileTextIcon, HelpCircleIcon, LayoutBottomIcon, MapsIcon, PieChartIcon, Settings01Icon, SparklesIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { IconBrandCodesandbox, IconShirtFilled } from '@tabler/icons-react'
 
@@ -138,6 +144,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
+        <SidebarGroup>
+          <SidebarGroupLabel>SUPPORT</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<a href="/dashboard/admin/help" />}>
+                  <HugeiconsIcon icon={HelpCircleIcon} strokeWidth={2} />
+                  <span>Help &amp; Guide</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
