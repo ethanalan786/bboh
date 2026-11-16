@@ -23,6 +23,7 @@ export async function GET(request: Request) {
         city: true,
         state: true,
         zipCode: true,
+        isActive: true,
         createdAt: true,
         updatedAt: true
       },
@@ -99,7 +100,7 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json()
-    const { id, name, email, role, phone, address, city, state, zipCode } = body
+    const { id, name, email, role, phone, address, city, state, zipCode, isActive } = body
 
     if (!id) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
@@ -130,20 +131,26 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Cannot change your own role' }, { status: 400 })
     }
 
-    // Update user
+    // Prevent users from deactivating themselves
+    if (id === session.user.id && isActive === false) {
+      return NextResponse.json({ error: 'Cannot deactivate your own account' }, { status: 400 })
+    }
+
+    // Update user — only apply fields that were actually sent
+    const data: Record<string, unknown> = { updatedAt: new Date() }
+    if (name !== undefined) data.name = name || existingUser.name
+    if (email !== undefined) data.email = email || existingUser.email
+    if (role !== undefined) data.role = role || existingUser.role
+    if (phone !== undefined) data.phone = phone || null
+    if (address !== undefined) data.address = address || null
+    if (city !== undefined) data.city = city || null
+    if (state !== undefined) data.state = state || null
+    if (zipCode !== undefined) data.zipCode = zipCode || null
+    if (typeof isActive === 'boolean') data.isActive = isActive
+
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        name: name || existingUser.name,
-        email: email || existingUser.email,
-        role: role || existingUser.role,
-        phone: phone || null,
-        address: address || null,
-        city: city || null,
-        state: state || null,
-        zipCode: zipCode || null,
-        updatedAt: new Date()
-      }
+      data
     })
 
     return NextResponse.json(updatedUser)

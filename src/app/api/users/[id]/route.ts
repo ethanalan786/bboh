@@ -18,7 +18,19 @@ export async function DELETE(
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            stockHistory: true,
+            sales: true,
+            customerSales: true,
+            auditLogs: true,
+            reportBookmarks: true,
+            feedback: true,
+          }
+        }
+      }
     })
 
     if (!user) {
@@ -30,12 +42,35 @@ export async function DELETE(
       return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 })
     }
 
-    // Delete the user
+    const activityCount =
+      user._count.stockHistory +
+      user._count.sales +
+      user._count.customerSales +
+      user._count.auditLogs +
+      user._count.reportBookmarks +
+      user._count.feedback
+
+    // Users with activity can't be hard-deleted without destroying sales,
+    // stock, and audit history — deactivate them instead.
+    if (activityCount > 0) {
+      await prisma.user.update({
+        where: { id },
+        data: { isActive: false }
+      })
+
+      return NextResponse.json({
+        success: true,
+        deactivated: true,
+        message: 'User has activity records and was deactivated instead of deleted.'
+      })
+    }
+
+    // No related records — safe to delete permanently
     await prisma.user.delete({
       where: { id }
     })
 
-    return NextResponse.json({ success: true, message: 'User deleted successfully' })
+    return NextResponse.json({ success: true, deactivated: false, message: 'User deleted successfully' })
   } catch (error) {
     console.error("Error deleting user:", error)
     return NextResponse.json(

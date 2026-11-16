@@ -14,7 +14,8 @@ export async function GET(request: Request) {
     // Fetch users (for customer selection) - only users with CUSTOMER role
     const customers = await prisma.user.findMany({
       where: {
-        role: 'CUSTOMER'
+        role: 'CUSTOMER',
+        isActive: { not: false }
       },
       select: {
         id: true,

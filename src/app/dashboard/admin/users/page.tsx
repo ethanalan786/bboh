@@ -68,6 +68,7 @@ interface User {
   city?: string
   state?: string
   zipCode?: string
+  isActive?: boolean
   createdAt: string
   updatedAt: string
 }
@@ -169,9 +170,13 @@ const UsersPage = () => {
       })
 
       if (response.ok) {
+        const data = await response.json().catch(() => null)
         setDeleteDialogOpen(false)
         setUserToDelete(null)
         await fetchUsers()
+        if (data?.deactivated) {
+          alert(data.message || "User deactivated — they have activity records that can't be deleted.")
+        }
       } else {
         const errorData = await response.json()
         alert(errorData.error || "Failed to delete user")
@@ -181,6 +186,26 @@ const UsersPage = () => {
       alert("Failed to delete user")
     } finally {
       setIsDeleting(false)
+    }
+  }
+
+  const handleToggleActive = async (user: User, isActive: boolean) => {
+    try {
+      const response = await fetch("/api/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: user.id, isActive })
+      })
+
+      if (response.ok) {
+        await fetchUsers()
+      } else {
+        const errorData = await response.json()
+        alert(errorData.error || "Failed to update user")
+      }
+    } catch (error) {
+      console.error("Error updating user:", error)
+      alert("Failed to update user")
     }
   }
 
@@ -449,9 +474,16 @@ const UsersPage = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={getRoleBadgeColor(user.role)}>
-                            {getRoleLabel(user.role)}
-                          </Badge>
+                          <div className="flex items-center gap-1.5">
+                            <Badge variant="outline" className={getRoleBadgeColor(user.role)}>
+                              {getRoleLabel(user.role)}
+                            </Badge>
+                            {user.isActive === false && (
+                              <Badge variant="outline" className="bg-gray-500/10 text-gray-400 border-gray-500/20">
+                                Inactive
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
@@ -489,6 +521,12 @@ const UsersPage = () => {
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
+                              {user.isActive === false && user.id !== session?.user?.id && (
+                                <DropdownMenuItem onClick={() => handleToggleActive(user, true)}>
+                                  <ShieldCheck className="h-4 w-4 mr-2" />
+                                  Reactivate
+                                </DropdownMenuItem>
+                              )}
                               {user.id !== session?.user?.id && (
                                 <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteUser(user)}>
                                   <Trash2 className="h-4 w-4 mr-2" />

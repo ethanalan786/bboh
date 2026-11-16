@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (!user) {
+        if (!user || user.isActive === false) {
           return null
         }
 
@@ -63,6 +63,9 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (existingUserByGoogleId) {
+          if (existingUserByGoogleId.isActive === false) {
+            return false
+          }
           user.id = existingUserByGoogleId.id
           user.role = existingUserByGoogleId.role
           return true
@@ -75,6 +78,10 @@ export const authOptions: NextAuthOptions = {
 
         if (!existingUser) {
           // User does not exist - deny sign in (no signup allowed)
+          return false
+        }
+
+        if (existingUser.isActive === false) {
           return false
         }
 

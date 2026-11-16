@@ -85,11 +85,44 @@ export async function DELETE(
 
     // Check if customer exists
     const existingCustomer = await prisma.user.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            stockHistory: true,
+            sales: true,
+            customerSales: true,
+            auditLogs: true,
+            reportBookmarks: true,
+            feedback: true,
+          }
+        }
+      }
     })
 
     if (!existingCustomer) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 })
+    }
+
+    const activityCount =
+      existingCustomer._count.stockHistory +
+      existingCustomer._count.sales +
+      existingCustomer._count.customerSales +
+      existingCustomer._count.auditLogs +
+      existingCustomer._count.reportBookmarks +
+      existingCustomer._count.feedback
+
+    // Customers with activity can't be hard-deleted without breaking
+    // sales history — deactivate them instead.
+    if (activityCount > 0) {
+      await prisma.user.update({
+        where: { id },
+        data: { isActive: false }
+      })
+
+      return NextResponse.json({
+        message: 'Customer has sales history and was deactivated instead of deleted.'
+      }, { status: 200 })
     }
 
     // Delete customer

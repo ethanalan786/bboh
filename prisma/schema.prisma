@@ -23,6 +23,7 @@ model User {
   state           String?
   zipCode         String?
   googleId        String?
+  isActive        Boolean          @default(true)
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   sales           Sale[]
