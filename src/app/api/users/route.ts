@@ -13,6 +13,16 @@ export async function GET(request: Request) {
 
     const users = await prisma.user.findMany({
       select: {
+        _count: {
+          select: {
+            stockHistory: true,
+            sales: true,
+            customerSales: true,
+            auditLogs: true,
+            reportBookmarks: true,
+            feedback: true,
+          }
+        },
         id: true,
         email: true,
         name: true,
@@ -32,7 +42,18 @@ export async function GET(request: Request) {
       }
     })
 
-    return NextResponse.json({ users })
+    const mappedUsers = users.map(({ _count, ...user }) => ({
+      ...user,
+      activityCount:
+        _count.stockHistory +
+        _count.sales +
+        _count.customerSales +
+        _count.auditLogs +
+        _count.reportBookmarks +
+        _count.feedback
+    }))
+
+    return NextResponse.json({ users: mappedUsers })
   } catch (error) {
     console.error("Error fetching users:", error)
     return NextResponse.json(

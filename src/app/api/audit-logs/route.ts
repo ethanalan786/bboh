@@ -28,8 +28,12 @@ export async function GET(request: Request) {
           }
         }
       },
+      // Sort by _id (ObjectId) instead of createdAt: MongoDB can use the _id
+      // index, avoiding an in-memory sort that exceeds the 32MB limit and
+      // fails once the collection grows. ObjectIds are time-ordered, so the
+      // result is equivalent for insert-only audit records.
       orderBy: {
-        createdAt: 'desc'
+        id: 'desc'
       },
       take: limit,
       skip: offset

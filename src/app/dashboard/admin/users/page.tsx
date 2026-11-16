@@ -54,6 +54,7 @@ import {
 } from "lucide-react"
 import { UserEditDialog } from "@/components/users/user-edit-dialog"
 import { UserCreateDialog } from "@/components/users/user-create-dialog"
+import { UserPurgeDialog } from "@/components/users/user-purge-dialog"
 import { DeleteConfirmationDialog } from "@/components/shared/delete-confirmation-dialog"
 import { format } from "date-fns"
 
@@ -69,6 +70,7 @@ interface User {
   state?: string
   zipCode?: string
   isActive?: boolean
+  activityCount?: number
   createdAt: string
   updatedAt: string
 }
@@ -97,6 +99,8 @@ const UsersPage = () => {
   // Delete dialog states
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<User | null>(null)
+  const [purgeDialogOpen, setPurgeDialogOpen] = useState(false)
+  const [userToPurge, setUserToPurge] = useState<User | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
   useEffect(() => {
@@ -156,6 +160,12 @@ const UsersPage = () => {
       alert("You cannot delete your own account.")
       return
     }
+    // Users with related records get the deactivate/purge choice dialog
+    if ((user.activityCount ?? 0) > 0) {
+      setUserToPurge(user)
+      setPurgeDialogOpen(true)
+      return
+    }
     setUserToDelete(user)
     setDeleteDialogOpen(true)
   }
@@ -206,6 +216,39 @@ const UsersPage = () => {
     } catch (error) {
       console.error("Error updating user:", error)
       alert("Failed to update user")
+    }
+  }
+
+  const handlePurgeAction = async (action: 'deactivate' | 'purge', confirmEmail?: string) => {
+    if (!userToPurge) return
+
+    try {
+      setIsDeleting(true)
+      const response = await fetch(`/api/users/${userToPurge.id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, confirmEmail })
+      })
+
+      const data = await response.json().catch(() => null)
+
+      if (response.ok) {
+        setPurgeDialogOpen(false)
+        setUserToPurge(null)
+        await fetchUsers()
+        if (data?.purged) {
+          alert("User and all related data permanently deleted.")
+        } else if (data?.deactivated) {
+          alert(data.message || "User deactivated — their history was preserved.")
+        }
+      } else {
+        alert(data?.error || data?.details || "Failed to delete user")
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error)
+      alert("Failed to delete user")
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -462,7 +505,7 @@ const UsersPage = () => {
                               {user.image ? (
                                 <img src={user.image} alt={user.name} className="h-full w-full object-cover" />
                               ) : (
-                                <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500 text-white text-xs font-medium">
+                                <div className="h-full w-full flex items-center justify-center bg-linear-to-br from-blue-500 to-purple-500 text-white text-xs font-medium">
                                   {user.name.charAt(0).toUpperCase()}
                                 </div>
                               )}
@@ -567,6 +610,19 @@ const UsersPage = () => {
         itemName={userToDelete?.name || ""}
         itemType="User"
         onConfirm={confirmDeleteUser}
+        isLoading={isDeleting}
+      />
+
+      <UserPurgeDialog
+        open={purgeDialogOpen}
+        onOpenChange={setPurgeDialogOpen}
+        user={userToPurge ? {
+          id: userToPurge.id,
+          name: userToPurge.name,
+          email: userToPurge.email
+        } : null}
+        onDeactivate={() => handlePurgeAction('deactivate')}
+        onPurge={(confirmEmail) => handlePurgeAction('purge', confirmEmail)}
         isLoading={isDeleting}
       />
     </div>

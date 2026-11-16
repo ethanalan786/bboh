@@ -226,13 +226,14 @@ const CustomerManagement = () => {
         throw new Error('Failed to delete customer');
       }
 
+      const data = await response.json().catch(() => null);
       setCustomers(customers.filter(c => c.id !== selectedCustomer.id));
       setShowDeleteDialog(false);
       setSelectedCustomer(null);
 
       toast.add({
         type: "success",
-        description: "Customer deleted successfully!",
+        description: data?.message || "Customer deleted successfully!",
       });
     } catch (error) {
       console.error('Error deleting customer:', error);

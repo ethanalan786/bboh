@@ -15,6 +15,8 @@ export async function DELETE(
     }
 
     const { id } = await params
+    const body = await request.json().catch(() => ({}))
+    const { action, confirmEmail } = body as { action?: string; confirmEmail?: string }
 
     // Check if user exists
     const user = await prisma.user.findUnique({
@@ -50,27 +52,58 @@ export async function DELETE(
       user._count.reportBookmarks +
       user._count.feedback
 
-    // Users with activity can't be hard-deleted without destroying sales,
-    // stock, and audit history — deactivate them instead.
-    if (activityCount > 0) {
-      await prisma.user.update({
-        where: { id },
-        data: { isActive: false }
+    if (activityCount === 0) {
+      // No related records — safe to delete permanently
+      await prisma.user.delete({
+        where: { id }
       })
+
+      return NextResponse.json({ success: true, purged: false, message: 'User deleted successfully' })
+    }
+
+    // Users with activity: either deactivate (keep history) or purge everything.
+    if (action === 'purge') {
+      // Extra verification — admin must type the user's email to confirm
+      if (!confirmEmail || confirmEmail.trim().toLowerCase() !== user.email.toLowerCase()) {
+        return NextResponse.json(
+          { error: 'Confirmation email does not match this user' },
+          { status: 400 }
+        )
+      }
+
+      // Detach the user from sales where they were the customer
+      await prisma.sale.updateMany({
+        where: { customerId: id },
+        data: { customerId: null }
+      })
+
+      // Delete every record related to the user
+      await prisma.stockHistory.deleteMany({ where: { userId: id } })
+      await prisma.sale.deleteMany({ where: { userId: id } })
+      await prisma.auditLog.deleteMany({ where: { userId: id } })
+      await prisma.reportBookmark.deleteMany({ where: { userId: id } })
+      await prisma.feedback.deleteMany({ where: { userId: id } })
+      await prisma.user.delete({ where: { id } })
 
       return NextResponse.json({
         success: true,
-        deactivated: true,
-        message: 'User has activity records and was deactivated instead of deleted.'
+        purged: true,
+        message: 'User and all related data permanently deleted.'
       })
     }
 
-    // No related records — safe to delete permanently
-    await prisma.user.delete({
-      where: { id }
+    // Default: deactivate — blocks login, preserves all history
+    await prisma.user.update({
+      where: { id },
+      data: { isActive: false }
     })
 
-    return NextResponse.json({ success: true, deactivated: false, message: 'User deleted successfully' })
+    return NextResponse.json({
+      success: true,
+      deactivated: true,
+      activityCount,
+      message: 'User has activity records and was deactivated instead of deleted.'
+    })
   } catch (error) {
     console.error("Error deleting user:", error)
     return NextResponse.json(

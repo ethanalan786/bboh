@@ -465,8 +465,11 @@ export default function AdminHelpPage() {
                       <Step title="Add a user">
                         Click <strong>Add User</strong> (top-right), fill in their details and role (<em>Admin</em>, <em>Front Desk</em>, <em>Inventory</em>, or <em>Customer</em>), and save. They&apos;ll be able to log in with the credentials you set.
                       </Step>
-                      <Step title="Edit or delete">
-                        Use the <strong>⋯ menu</strong> on a user&apos;s row → <em>Edit</em> or <em>Delete</em>. You can&apos;t delete your own account, and the role filter buttons (All / Admin / Front Desk / Inventory / Customer) plus search help you find anyone quickly.
+                      <Step title="Edit, deactivate, or delete">
+                        Use the <strong>⋯ menu</strong> on a user&apos;s row → <em>Edit</em>, <em>Reactivate</em> (inactive users), or <em>Delete</em>. You can&apos;t delete your own account, and the role filter buttons (All / Admin / Front Desk / Inventory / Customer) plus search help you find anyone quickly.
+                      </Step>
+                      <Step title="What happens on Delete">
+                        Users with no activity are deleted permanently (you&apos;ll be asked to type their name). Users with sales or history get a choice: <strong>Deactivate Only</strong> keeps all records and blocks their login, or <strong>Delete Everything</strong> permanently removes all their data — this requires typing their email to confirm.
                       </Step>
                     </Steps>
                   </SubBlock>
