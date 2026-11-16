@@ -97,20 +97,31 @@ export function UserPurgeDialog({
 }: UserPurgeDialogProps) {
   const [confirmEmail, setConfirmEmail] = useState("")
   const [activity, setActivity] = useState<UserActivity | null>(null)
+  const [activityError, setActivityError] = useState<string | null>(null)
   const [loadingActivity, setLoadingActivity] = useState(false)
 
   const handleOpenChange = (o: boolean) => {
     if (o && user) {
       setLoadingActivity(true)
       setActivity(null)
+      setActivityError(null)
       fetch(`/api/users/${user.id}/activity`)
-        .then((res) => (res.ok ? res.json() : null))
+        .then(async (res) => {
+          if (!res.ok) {
+            const body = await res.json().catch(() => null)
+            throw new Error(`HTTP ${res.status}${body?.error ? ` — ${body.error}` : ""}`)
+          }
+          return res.json()
+        })
         .then((data) => setActivity(data?.activity ?? null))
-        .catch(() => setActivity(null))
+        .catch((err) =>
+          setActivityError(err instanceof Error ? err.message : "Network error")
+        )
         .finally(() => setLoadingActivity(false))
     } else {
       setConfirmEmail("")
       setActivity(null)
+      setActivityError(null)
     }
     onOpenChange(o)
   }
@@ -180,7 +191,8 @@ export function UserPurgeDialog({
             </>
           ) : (
             <p className="px-3 py-4 text-sm text-muted-foreground">
-              Couldn&apos;t load the activity breakdown — deleting will still
+              Couldn&apos;t load the activity breakdown
+              {activityError ? ` (${activityError})` : ""} — deleting will still
               remove all related records.
             </p>
           )}
